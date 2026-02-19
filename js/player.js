@@ -7,6 +7,16 @@ class Player {
 
         this.moveSpeed = 3.0; // Units per second
         this.rotSpeed = 3.0;  // Radians per second
+
+        // Stats
+        this.hp = 100;
+        this.armor = 0;
+        this.weapon = 'Pistol';
+        this.ammo = {
+            pistol: 50,
+            shotgun: 10,
+            rifle: 0
+        };
         this.radius = 0.2;    // Collision radius
     }
 

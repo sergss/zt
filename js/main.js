@@ -14,6 +14,7 @@ let player;
 let raycaster;
 let renderer;
 let textureManager;
+let hud;
 
 function init() {
     console.log('Game Initialized');
@@ -26,6 +27,7 @@ function init() {
     raycaster = new Raycaster(map);
     renderer = new Renderer(ctx, CONFIG);
     textureManager = new TextureManager();
+    hud = new HUD(CONFIG);
 
     requestAnimationFrame(gameLoop);
 }
@@ -83,21 +85,10 @@ function draw() {
     ctx.lineTo(pX + Math.cos(player.angle) * 10, pY + Math.sin(player.angle) * 10);
     ctx.stroke();
 
-    // Draw debugging info
-    ctx.fillStyle = '#ffffff';
-    ctx.font = '16px monospace';
-    const pressed = Input.getPressedKeys().join(', ');
-    ctx.fillText(`Pressed: ${pressed}`, 10, 340); // Moved down below map (20*16 = 320)
-
-    // Show active actions
-    let y = 360;
-    for (const action in Input.actions) {
-        if (Input.isActionActive(action)) {
-            ctx.fillText(`Action: ${action}`, 10, y);
-            y += 20;
-        }
+    // Draw HUD (Step 8)
+    if (hud && player) {
+        hud.render(ctx, player, 0); // 0 enemies for now
     }
-
 }
 
 function gameLoop(timestamp) {
