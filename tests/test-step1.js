@@ -1,5 +1,5 @@
 function testStep1(T) {
-    T.assert(window.CONFIG, 'Config object exists');
+    T.assert(typeof CONFIG !== 'undefined', 'Config object exists');
     T.assertEqual(CONFIG.SCREEN_WIDTH, 960, 'Screen width is 960');
     T.assertEqual(CONFIG.SCREEN_HEIGHT, 600, 'Screen height is 600');
 
