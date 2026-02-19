@@ -57,6 +57,7 @@ class HUD {
         const armPct = Math.max(0, player.armor / 100);
         ctx.fillRect(startX, armorY, barWidth * armPct, barHeight);
 
+        ctx.fillStyle = '#ffffff';
         ctx.fillText(`ARMOR  ${player.armor}%`, startX, armorY - 5);
     }
 
