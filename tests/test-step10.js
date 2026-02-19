@@ -14,7 +14,9 @@ function testStep10(T) {
     };
 
     // 1. Health Pickup
-    const s1 = new Sprite(0.1, 0.1, 'healthBig'); // Close
+    // Distance must be < 0.25 sq (0.5 units)
+    // Player at 1.5, 1.5. Sprite at 1.6, 1.6. DistSq = 0.1^2 + 0.1^2 = 0.02. OK.
+    const s1 = new Sprite(1.6, 1.6, 'healthBig');
     s1.updateDistance(p);
     T.assert(s1.active, 'Sprite active initially');
     const picked = s1.checkPickup(p);
@@ -23,26 +25,26 @@ function testStep10(T) {
     T.assertEqual(p.hp, 75, 'HP increased by 25');
 
     // 2. Armor Pickup
-    const sArmor = new Sprite(0.1, 0.1, 'armor');
+    const sArmor = new Sprite(1.6, 1.6, 'armor');
     sArmor.updateDistance(p);
     sArmor.checkPickup(p);
     T.assertEqual(p.armor, 25, 'Armor increased by 25');
 
     // 3. Weapon Pickup (Shotgun)
-    const sShotgun = new Sprite(0.1, 0.1, 'weaponShotgun');
+    const sShotgun = new Sprite(1.6, 1.6, 'weaponShotgun');
     sShotgun.updateDistance(p);
     sShotgun.checkPickup(p);
     T.assert(p.weapons[1], 'Shotgun unlocked');
     T.assertEqual(p.ammo.shells, 8, 'Shotgun ammo +8');
 
     // 4. New Weapons
-    const sRifle = new Sprite(0.1, 0.1, 'weaponAssaultRifle');
+    const sRifle = new Sprite(1.6, 1.6, 'weaponAssaultRifle');
     sRifle.updateDistance(p);
     sRifle.checkPickup(p);
     T.assert(p.weapons[2], 'Assault Rifle unlocked');
     T.assertEqual(p.ammo.bullets, 20, 'Bullets +20'); // 0 + 20
 
-    const sRocket = new Sprite(0.1, 0.1, 'weaponRocketLauncher');
+    const sRocket = new Sprite(1.6, 1.6, 'weaponRocketLauncher');
     sRocket.updateDistance(p);
     sRocket.checkPickup(p);
     T.assert(p.weapons[4], 'Rocket Launcher unlocked');

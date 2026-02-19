@@ -17,7 +17,8 @@ class TextureManager {
         const items = [
             'medkit', 'healthBig', 'healthSmall', 'armor', 'key',
             'ammo', 'ammoBullets', 'ammoShells', 'ammoBelt', 'ammoRockets', 'ammoFuel', 'ammoCells',
-            'weaponShotgun', 'weaponAssaultRifle', 'weaponMachinegun', 'weaponRocketLauncher', 'weaponFlamethrower', 'weaponLaser'
+            'weaponShotgun', 'weaponAssaultRifle', 'weaponMachinegun', 'weaponRocketLauncher', 'weaponFlamethrower', 'weaponLaser',
+            'enemyGuard', 'enemyDead'
         ];
         items.forEach(type => {
             this.textures[type] = this.generateTexture(type);
@@ -28,7 +29,8 @@ class TextureManager {
         if ([
             'medkit', 'healthBig', 'healthSmall', 'armor', 'key', 'ammo',
             'ammoBullets', 'ammoShells', 'ammoBelt', 'ammoRockets', 'ammoFuel', 'ammoCells',
-            'weaponShotgun', 'weaponAssaultRifle', 'weaponMachinegun', 'weaponRocketLauncher', 'weaponFlamethrower', 'weaponLaser'
+            'weaponShotgun', 'weaponAssaultRifle', 'weaponMachinegun', 'weaponRocketLauncher', 'weaponFlamethrower', 'weaponLaser',
+            'enemyGuard', 'enemyDead'
         ].includes(type)) {
             return this.generateItemTexture(type);
         }
@@ -286,6 +288,34 @@ class TextureManager {
             ctx.fillRect(20, 20, 24, 32);
             ctx.fillStyle = '#00ffff';
             ctx.fillRect(24, 24, 16, 20); // Energy
+        }
+        else if (type === 'enemyGuard') {
+            // Humanoid shape
+            // Head
+            ctx.fillStyle = '#eec'; // Skin
+            ctx.fillRect(24, 4, 16, 16);
+            // Helmet/Hat
+            ctx.fillStyle = '#333';
+            ctx.fillRect(22, 2, 20, 6);
+            // Body (Uniform)
+            ctx.fillStyle = '#334466'; // Blue-ish uniform
+            ctx.fillRect(20, 20, 24, 24);
+            // Legs
+            ctx.fillStyle = '#223355';
+            ctx.fillRect(22, 44, 8, 20);
+            ctx.fillRect(34, 44, 8, 20);
+            // Gun
+            ctx.fillStyle = '#111';
+            ctx.fillRect(10, 30, 20, 6);
+        }
+        else if (type === 'enemyDead') {
+            // Lying down
+            ctx.fillStyle = '#334466';
+            ctx.fillRect(10, 40, 44, 12); // Body
+            ctx.fillStyle = '#aa0000'; // Blood
+            ctx.beginPath();
+            ctx.arc(32, 46, 10, 0, Math.PI * 2);
+            ctx.fill();
         }
 
         return canvas;

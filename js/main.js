@@ -16,6 +16,7 @@ let renderer;
 let textureManager;
 let hud;
 let sprites = [];
+let enemies = [];
 
 function init() {
     console.log('Game Initialized');
@@ -48,6 +49,13 @@ function init() {
     ];
     // Make them visible by default
     sprites.forEach(s => s.visible = true);
+
+    // Step 11: Enemies
+    enemies = [
+        new Enemy(10.5, 7.5, 'enemyGuard'),
+        new Enemy(12.5, 7.5, 'enemyGuard'),
+        new Enemy(11.5, 9.5, 'enemyGuard')
+    ];
 
     // Initialize Raycaster and Renderer for Step 5
     raycaster = new Raycaster(map);
@@ -108,6 +116,11 @@ function update(dt) {
     if (map) {
         map.update(dt);
     }
+
+    // Step 11: Update enemies
+    enemies.forEach(enemy => {
+        enemy.update(dt, player, map);
+    });
 }
 
 function draw() {
@@ -118,8 +131,12 @@ function draw() {
     // Draw 3D View (Step 5)
     if (renderer && player && map && raycaster && textureManager) {
         renderer.render3D(player, map, raycaster, textureManager);
-        // Step 10: Render Sprites
-        renderer.renderSprites(player, sprites, textureManager);
+
+        // Step 10 & 11: Render Sprites and Enemies
+        // We combine them for correct Z-sorting
+        const allSprites = sprites.concat(enemies);
+        renderer.renderSprites(player, allSprites, textureManager);
+
         renderer.renderWeapon(player);
     }
 
