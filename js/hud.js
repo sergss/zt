@@ -32,10 +32,11 @@ class HUD {
     }
 
     drawBars(ctx, player) {
-        const barHeight = 20;
+        const barHeight = 15;
         const barWidth = 200;
-        const startY = this.viewY + this.viewH + 30;
-        const startX = 20;
+        // Place below viewport, aligned left-ish
+        const startY = this.viewY + this.viewH + 20;
+        const startX = this.viewX + 20; // Start inside viewport width
 
         // HP Bar
         ctx.fillStyle = '#000000';
@@ -45,72 +46,84 @@ class HUD {
         ctx.fillRect(startX, startY, barWidth * hpPct, barHeight);
 
         ctx.fillStyle = '#ffffff';
-        ctx.font = '16px monospace';
-        ctx.fillText(`HEALTH ${player.hp}%`, startX + 10, startY + 15);
+        ctx.font = '14px monospace';
+        ctx.fillText(`HEALTH ${player.hp}%`, startX, startY - 5);
 
         // Armor Bar
-        const armorY = startY + 30;
+        const armorY = startY + 40;
         ctx.fillStyle = '#000000';
         ctx.fillRect(startX, armorY, barWidth, barHeight);
         ctx.fillStyle = '#0000aa';
         const armPct = Math.max(0, player.armor / 100);
         ctx.fillRect(startX, armorY, barWidth * armPct, barHeight);
 
-        ctx.fillText(`ARMOR  ${player.armor}%`, startX + 10, armorY + 15);
+        ctx.fillText(`ARMOR  ${player.armor}%`, startX, armorY - 5);
     }
 
     drawInfo(ctx, player, enemiesLeft) {
-        const startX = 300;
-        const startY = this.viewY + this.viewH + 45;
+        // Center area for Weapons
+        const centerX = this.viewX + this.viewW / 2;
+        const startY = this.viewY + this.viewH + 40;
 
         ctx.fillStyle = '#ffffff';
-        ctx.font = '24px monospace';
+        ctx.font = '20px monospace';
+        ctx.textAlign = 'center';
 
         // Ammo
         let ammoCount = player.ammo[player.weapon.toLowerCase()] || 0;
-        ctx.fillText(`AMMO ${ammoCount}`, startX, startY);
+        ctx.fillText(`${ammoCount}`, centerX - 50, startY);
+        ctx.font = '14px monospace';
+        ctx.fillText(`AMMO`, centerX - 50, startY + 20);
 
         // Weapon
-        ctx.fillText(`WEAPON: ${player.weapon.toUpperCase()}`, startX + 200, startY);
+        ctx.font = '20px monospace';
+        ctx.fillText(`${player.weapon.toUpperCase()}`, centerX + 50, startY);
+        ctx.font = '14px monospace';
+        ctx.fillText(`WEAPON`, centerX + 50, startY + 20);
 
-        // Enemies
-        ctx.fillText(`ENEMIES: ${enemiesLeft}`, startX + 500, startY);
+        // Enemies/Score - Move to Right side of bottom panel
+        const rightX = this.viewX + this.viewW - 80;
+        ctx.textAlign = 'right';
+        ctx.font = '16px monospace';
+        ctx.fillText(`ENEMIES: ${enemiesLeft}`, rightX, startY);
+        ctx.fillText(`SCORE: 0`, rightX, startY - 25);
 
-        // Score (Placeholder)
-        ctx.fillText(`SCORE: 0`, startX + 500, startY - 30);
+        // Reset alignment
+        ctx.textAlign = 'left';
     }
 
     drawCompass(ctx, player) {
-        // Simple Compass Circle
-        const cX = 850;
-        const cY = 500;
-        const radius = 40;
+        // Compass on the far right panel (outside viewport)
+        const cX = this.viewX + this.viewW + 80; // ~ 160+640+80 = 880
+        const cY = this.viewY + this.viewH / 2; // Vertically centered in right panel? No, that's too high maybe.
+        // Let's put it bottom right, consistent with previous, but clear of text.
+        // Or in the right sidebar.
+        const compassY = 500;
 
+        const radius = 35;
+
+        // ... drawing code same ...
         ctx.fillStyle = '#003300';
         ctx.beginPath();
-        ctx.arc(cX, cY, radius, 0, Math.PI * 2);
+        ctx.arc(cX, compassY, radius, 0, Math.PI * 2);
         ctx.fill();
         ctx.strokeStyle = '#00ff00';
         ctx.lineWidth = 2;
         ctx.stroke();
 
-        // Direction Indicator
-        // Player angle is in radians. 0 = East.
-        // We want to show which way is North relative to player look? 
-        // Or show player arrow inside static compass?
-        // Let's do static compass (North is Up), moving arrow.
-
         ctx.strokeStyle = '#ffffff';
         ctx.beginPath();
-        ctx.moveTo(cX, cY);
-        // Arrow points in direction of player angle
-        ctx.lineTo(cX + Math.cos(player.angle) * (radius - 5), cY + Math.sin(player.angle) * (radius - 5));
+        ctx.moveTo(cX, compassY);
+        ctx.lineTo(cX + Math.cos(player.angle) * (radius - 5), compassY + Math.sin(player.angle) * (radius - 5));
         ctx.stroke();
 
-        // N, E, S, W labels
         ctx.fillStyle = '#aaaaaa';
         ctx.font = '12px monospace';
-        ctx.fillText('N', cX - 4, cY - radius - 5);
-        ctx.fillText('E', cX + radius + 5, cY + 4);
+        ctx.textAlign = 'center';
+        ctx.fillText('N', cX, compassY - radius - 5);
+        ctx.textBaseline = 'middle';
+        ctx.fillText('E', cX + radius + 10, compassY);
+        ctx.textBaseline = 'alphabetic';
+        ctx.textAlign = 'left';
     }
 }

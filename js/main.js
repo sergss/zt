@@ -64,12 +64,18 @@ function draw() {
         renderer.render3D(player, map, raycaster, textureManager);
     }
 
-    // Draw Map (2D debug view) - Keep it for now, maybe move it or toggle it?
-    // Tasks.md says "Keep 2D-minimap nearby (for debug)"
-    // Let's render it at 0,0 (top left)
+
+
+    // Draw HUD (Step 8)
+    if (hud && player) {
+        hud.render(ctx, player, 0); // 0 enemies for now
+    }
+
+    // Draw Map (2D debug view)
+    // Draw AFTER HUD so it is not covered by the frame
     map.render2D(ctx, 0, 0);
 
-    // Draw Player
+    // Draw Player on Map
     const pX = player.x * map.cellSize;
     const pY = player.y * map.cellSize;
 
@@ -84,11 +90,6 @@ function draw() {
     ctx.moveTo(pX, pY);
     ctx.lineTo(pX + Math.cos(player.angle) * 10, pY + Math.sin(player.angle) * 10);
     ctx.stroke();
-
-    // Draw HUD (Step 8)
-    if (hud && player) {
-        hud.render(ctx, player, 0); // 0 enemies for now
-    }
 }
 
 function gameLoop(timestamp) {
