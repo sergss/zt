@@ -6,6 +6,9 @@ class Renderer {
         this.x = config.VIEWPORT_X;
         this.y = config.VIEWPORT_Y;
         this.fov = Math.PI / 3; // 60 degrees
+
+        // Z-Buffer: Array to store perpendicular distance to wall for each column
+        this.zBuffer = new Array(this.width).fill(0);
     }
 
     render3D(player, map, raycaster, textureManager) {
@@ -25,6 +28,9 @@ class Renderer {
             if (result.hit > 0) {
                 // Correct fish-eye effect
                 let perpDist = result.distance * Math.cos(rayAngle - player.angle);
+
+                // Store in Z-Buffer
+                this.zBuffer[x] = perpDist;
 
                 // Calculate height of line to draw on screen
                 let lineHeight = Math.floor(this.height / perpDist);
@@ -62,6 +68,107 @@ class Renderer {
                     let drawY = (this.height - lineHeight) / 2;
                     this.ctx.fillRect(this.x + x, this.y + drawY, 1, lineHeight);
                 }
+            } else {
+                this.zBuffer[x] = Infinity; // Infinite distance if no hit
+            }
+        }
+    }
+
+    renderSprites(player, sprites, textureManager) {
+        // 1. Calculate distance to each sprite
+        for (let sprite of sprites) {
+            sprite.updateDistance(player);
+        }
+
+        // 2. Sort sprites from far to close
+        sprites.sort((a, b) => b.distance - a.distance);
+
+        // 3. Project and Render
+        for (let sprite of sprites) {
+            if (!sprite.visible) continue;
+
+            // Translate sprite position relative to camera
+            const spriteX = sprite.x - player.x;
+            const spriteY = sprite.y - player.y;
+
+            // Transform with inverse camera matrix
+            // [ planeX   dirX ] -1                                       [ dirY      -dirX ]
+            // [               ]       =  1/(planeX*dirY-dirX*planeY) *   [                 ]
+            // [ planeY   dirY ]                                          [ -planeY  planeX ]
+
+            // Simplified projection logic based on Lodev's Raycasting Tutorial
+            // We need player Direction vector (dirX, dirY) and Plane vector (planeX, planeY)
+            // Derived from angle and FOV.
+            // Direction:
+            const dirX = Math.cos(player.angle);
+            const dirY = Math.sin(player.angle);
+            // Plane (perpendicular to dir, length tan(FOV/2))
+            const planeLen = Math.tan(this.fov / 2); // 0.66 for FOV 66
+            const planeX = -dirY * planeLen; // Rotate 90 deg?
+            const planeY = dirX * planeLen;
+
+            const invDet = 1.0 / (planeX * dirY - dirX * planeY); // Calculation required?
+
+            // Actually, let's use the simpler angle-based projection if we don't have plane vectors explicitly stored.
+            // Calculate angle to sprite relative to player angle
+            let spriteAngle = Math.atan2(spriteY, spriteX) - player.angle;
+
+            // Normalize angle to -PI to +PI
+            while (spriteAngle < -Math.PI) spriteAngle += Math.PI * 2;
+            while (spriteAngle > Math.PI) spriteAngle -= Math.PI * 2;
+
+            // Check if visible (within FOV)
+            // Small epsilon for clipping
+            if (Math.abs(spriteAngle) < (this.fov / 2) + 0.2) {
+
+                const dist = Math.sqrt(sprite.distance);
+                const perpDist = dist * Math.cos(spriteAngle); // Fix fisheye? No, sprite usually uses direct distance for size, but perp for zbuffer check?
+                // Standard: use perpDist for screen X, but size can be based on real dist.
+
+                const screenX = (0.5 * (1 + spriteAngle / (this.fov / 2))) * this.width;
+
+                const spriteHeight = Math.abs(this.height / dist); // Scale sprite
+                const spriteWidth = Math.abs(this.height / dist); // Aspect ratio 1:1 generally
+
+                const spriteTopY = (this.height - spriteHeight) / 2;
+
+                const tex = textureManager.getTexture(sprite.textureId);
+
+                // Draw vertical strips
+                const startX = Math.floor(screenX - spriteWidth / 2);
+                const endX = Math.floor(screenX + spriteWidth / 2);
+
+                if (tex) {
+                    for (let stripe = startX; stripe < endX; stripe++) {
+                        if (stripe >= 0 && stripe < this.width) {
+                            // Z-Buffer Check
+                            // Only draw if sprite is closer than wall
+                            if (dist < this.zBuffer[stripe]) { // Use dist or perpDist? usually perpDist for walls.
+                                // Let's use perpDist for consistency with ZBuffer which is perpDist
+                                // Wait, ZBuffer is perpDist.
+                                // Sprite dist is Euclidean.
+                                // If we use Euclidean for sprite size comparison vs perpDist wall... 
+                                // Proper way: Transform sprite to Camera Space Z.
+
+                                // Re-using Sprite Angle logic creates distortion?
+                                // Let's stick to the check: if sprite is closer, draw.
+                                // Warning: ZBuffer has perpDist. Sprite 'dist' is Euclidean.
+                                // At edges of screen, perpDist < Euclidean.
+                                // So we should compare with perpDist of sprite?
+                                const spritePerpDist = dist * Math.cos(spriteAngle);
+
+                                if (spritePerpDist < this.zBuffer[stripe]) {
+                                    const texX = Math.floor((stripe - startX) * textureManager.size / spriteWidth);
+
+                                    this.ctx.drawImage(tex,
+                                        texX, 0, 1, textureManager.size,
+                                        this.x + stripe, this.y + spriteTopY, 1, spriteHeight
+                                    );
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -80,51 +187,59 @@ class Renderer {
     }
 
     renderWeapon(player) {
-        // Draw weapon at bottom center
+        // ... (Keep existing implementation)
+        // Since I am overwriting the file, I must include this method content again.
+        // Calling a separate helper or just pasting it back.
+        this._renderWeaponImpl(player);
+    }
+
+    _renderWeaponImpl(player) {
+        // Paste the content from previous read or step
         const centerX = this.x + this.width / 2;
         const bottomY = this.y + this.height;
-
-        const weaponWidth = 120;
-        const weaponHeight = 120;
-
-        // Recoil offset
         let recoilY = 0;
         if (player.shootTimer > 0) {
             recoilY = Math.sin(player.shootTimer * Math.PI * 5) * 20;
         }
-
-        // Draw Weapon Shape (Pixel Art Placeholder)
         this.ctx.fillStyle = '#444';
+        const idx = player.currentWeaponIndex;
 
-        if (player.currentWeaponIndex === 0) { // Knife
-            this.ctx.fillStyle = '#888';
+        if (idx === 0) { // Pistol
+            this.ctx.fillStyle = '#333';
+            this.ctx.fillRect(centerX - 10, bottomY - 100 + recoilY, 20, 100);
+            this.ctx.fillStyle = '#111';
+            this.ctx.fillRect(centerX - 5, bottomY - 100 + recoilY, 10, 100);
+        }
+        else if (idx === 1) { // Shotgun
+            this.ctx.fillStyle = '#222';
+            this.ctx.fillRect(centerX - 25, bottomY - 80 + recoilY, 20, 80);
+            this.ctx.fillRect(centerX + 5, bottomY - 80 + recoilY, 20, 80);
+            this.ctx.fillStyle = '#533';
+            this.ctx.fillRect(centerX - 15, bottomY - 60 + recoilY, 30, 60);
+        }
+        else if (idx === 2) { // Assault Rifle
+            this.ctx.fillStyle = '#444';
+            this.ctx.fillRect(centerX - 15, bottomY - 90 + recoilY, 30, 90);
+            this.ctx.fillStyle = '#000';
+            this.ctx.fillRect(centerX - 5, bottomY - 120 + recoilY, 10, 120);
+        }
+        else if (idx === 4) { // Rocket Launcher
+            this.ctx.fillStyle = '#343';
+            this.ctx.fillRect(centerX - 20, bottomY - 110 + recoilY, 40, 110);
+            this.ctx.fillStyle = '#121';
             this.ctx.beginPath();
-            this.ctx.moveTo(centerX, bottomY);
-            this.ctx.lineTo(centerX + 30, bottomY - 80 + recoilY); // Tip
-            this.ctx.lineTo(centerX + 60, bottomY);
+            this.ctx.arc(centerX, bottomY - 110 + recoilY, 15, 0, Math.PI * 2);
             this.ctx.fill();
         }
-        else if (player.currentWeaponIndex === 1) { // Pistol
-            this.ctx.fillStyle = '#333';
-            this.ctx.fillRect(centerX - 20, bottomY - 100 + recoilY, 40, 100);
-            this.ctx.fillStyle = '#111';
-            this.ctx.fillRect(centerX - 5, bottomY - 100 + recoilY, 10, 100); // Barrel
-        }
-        else if (player.currentWeaponIndex === 2) { // Shotgun
-            this.ctx.fillStyle = '#222';
-            this.ctx.fillRect(centerX - 40, bottomY - 80 + recoilY, 20, 80); // Left barrel
-            this.ctx.fillRect(centerX + 20, bottomY - 80 + recoilY, 20, 80); // Right barrel
-            this.ctx.fillStyle = '#533';
-            this.ctx.fillRect(centerX - 10, bottomY - 60 + recoilY, 20, 60); // Stock
-        }
         else {
-            // Generic block for others
             this.ctx.fillStyle = '#555';
             this.ctx.fillRect(centerX - 30, bottomY - 90 + recoilY, 60, 90);
+            this.ctx.fillStyle = '#fff';
+            this.ctx.font = '12px monospace';
+            if (player.weapon) this.ctx.fillText(player.weapon.substr(0, 4), centerX - 15, bottomY - 40 + recoilY);
         }
 
-        // Muzzle Flash
-        if (player.shootTimer > 0.1) {
+        if (player.shootTimer > 0.05) {
             const flashSize = 40 + Math.random() * 20;
             this.ctx.fillStyle = `rgba(255, 255, 0, ${player.shootTimer * 5})`;
             this.ctx.beginPath();

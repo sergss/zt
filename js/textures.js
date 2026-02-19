@@ -12,9 +12,18 @@ class TextureManager {
         this.textures[3] = this.generateTexture('tech');
         this.textures[4] = this.generateTexture('concrete');
         this.textures[5] = this.generateTexture('door');
+
+        // Items
+        this.textures['medkit'] = this.generateTexture('medkit');
+        this.textures['ammo'] = this.generateTexture('ammo');
+        this.textures['key'] = this.generateTexture('key');
     }
 
     generateTexture(type) {
+        if (['medkit', 'ammo', 'key'].includes(type)) {
+            return this.generateItemTexture(type);
+        }
+
         const canvas = document.createElement('canvas');
         canvas.width = this.size;
         canvas.height = this.size;
@@ -92,6 +101,58 @@ class TextureManager {
             ctx.beginPath();
             ctx.arc(48, 32, 4, 0, Math.PI * 2); // Handle/Panel
             ctx.fill();
+        }
+
+        return canvas;
+    }
+
+    generateItemTexture(type) {
+        const canvas = document.createElement('canvas');
+        canvas.width = this.size;
+        canvas.height = this.size;
+        const ctx = canvas.getContext('2d');
+
+        // Transparent BG
+        // ctx.clearRect(0,0,this.size, this.size); 
+
+        if (type === 'medkit') {
+            // White box
+            ctx.fillStyle = '#eeeeee';
+            ctx.fillRect(10, 10, 44, 44);
+            // Red shadows
+            ctx.fillStyle = '#cccccc';
+            ctx.fillRect(50, 10, 4, 44);
+            ctx.fillRect(10, 50, 44, 4);
+
+            // Red Cross
+            ctx.fillStyle = '#cc0000';
+            const center = 32;
+            const thick = 8;
+            ctx.fillRect(center - thick / 2, 20, thick, 24);
+            ctx.fillRect(20, center - thick / 2, 24, thick);
+        }
+        else if (type === 'ammo') {
+            // Green Box
+            ctx.fillStyle = '#004400';
+            ctx.fillRect(10, 20, 44, 30);
+            ctx.fillStyle = '#006600';
+            ctx.fillRect(12, 22, 40, 26);
+
+            // Label
+            ctx.fillStyle = '#ffff00';
+            ctx.fillRect(20, 30, 24, 8);
+        }
+        else if (type === 'key') {
+            // Yellow Card
+            ctx.fillStyle = '#aaaa00';
+            ctx.beginPath();
+            ctx.ellipse(32, 32, 10, 20, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#ffff00';
+            ctx.fillRect(24, 16, 16, 32);
+            ctx.fillStyle = '#cccc00';
+            ctx.fillRect(28, 20, 8, 24);
         }
 
         return canvas;

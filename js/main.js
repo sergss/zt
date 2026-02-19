@@ -15,6 +15,7 @@ let raycaster;
 let renderer;
 let textureManager;
 let hud;
+let sprites = [];
 
 function init() {
     console.log('Game Initialized');
@@ -22,6 +23,15 @@ function init() {
 
     map = new GameMap(testLevel);
     player = new Player(1.5, 1.5, 0, map);
+
+    // Step 10: Sprites
+    sprites = [
+        new Sprite(3.5, 3.5, 'medkit'),
+        new Sprite(2.5, 3.5, 'ammo'),
+        new Sprite(3.5, 2.5, 'key')
+    ];
+    // Make them visible by default
+    sprites.forEach(s => s.visible = true);
 
     // Initialize Raycaster and Renderer for Step 5
     raycaster = new Raycaster(map);
@@ -94,8 +104,11 @@ function draw() {
     ctx.fillRect(0, 0, CONFIG.SCREEN_WIDTH, CONFIG.SCREEN_HEIGHT);
 
     // Draw 3D View (Step 5)
+    // Draw 3D View (Step 5)
     if (renderer && player && map && raycaster && textureManager) {
         renderer.render3D(player, map, raycaster, textureManager);
+        // Step 10: Render Sprites
+        renderer.renderSprites(player, sprites, textureManager);
         renderer.renderWeapon(player);
     }
 
