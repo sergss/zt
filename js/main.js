@@ -9,9 +9,21 @@ let frameCount = 0;
 let lastFpsTime = 0;
 let fps = 0;
 
+let map;
+let player;
+
 function init() {
     console.log('Game Initialized');
     Input.init();
+
+    map = new GameMap(testLevel);
+    // Basic player state for Step 3
+    player = {
+        x: 3.5, // Center of cell (3, 3)
+        y: 3.5,
+        angle: 0 // Facing East
+    };
+
     requestAnimationFrame(gameLoop);
 }
 
@@ -24,14 +36,33 @@ function draw() {
     ctx.fillStyle = '#000000';
     ctx.fillRect(0, 0, CONFIG.SCREEN_WIDTH, CONFIG.SCREEN_HEIGHT);
 
+    // Draw Map (2D debug view)
+    map.render2D(ctx, 0, 0);
+
+    // Draw Player
+    const pX = player.x * map.cellSize;
+    const pY = player.y * map.cellSize;
+
+    ctx.fillStyle = '#ff0000';
+    ctx.beginPath();
+    ctx.arc(pX, pY, 4, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Draw Direction
+    ctx.strokeStyle = '#ffff00';
+    ctx.beginPath();
+    ctx.moveTo(pX, pY);
+    ctx.lineTo(pX + Math.cos(player.angle) * 10, pY + Math.sin(player.angle) * 10);
+    ctx.stroke();
+
     // Draw debugging info
     ctx.fillStyle = '#ffffff';
     ctx.font = '16px monospace';
     const pressed = Input.getPressedKeys().join(', ');
-    ctx.fillText(`Pressed: ${pressed}`, 10, 50);
+    ctx.fillText(`Pressed: ${pressed}`, 10, 340); // Moved down below map (20*16 = 320)
 
     // Show active actions
-    let y = 70;
+    let y = 360;
     for (const action in Input.actions) {
         if (Input.isActionActive(action)) {
             ctx.fillText(`Action: ${action}`, 10, y);

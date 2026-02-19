@@ -25,6 +25,7 @@
     <canvas id="gameCanvas" width="960" height="600" style="display:none;"></canvas>
     <script src="../js/config.js"></script>
     <script src="../js/input.js"></script>
+    <script src="../js/map.js"></script>
     <!-- Note: main.js starts the game loop automatically, which might be undesirable for tests. 
          We might need to refactor main.js to only start if not testing, or just use what we need. 
          For Step 1 testing, we just need config and checking the canvas. -->
@@ -32,14 +33,15 @@
     <!-- Test Framework -->
     <script src="test-framework.js"></script>
 
-    <!-- Tests -->
     <script src="test-step1.js"></script>
     <script src="test-step2.js"></script>
+    <script src="test-step3.js"></script>
 
     <script>
         // Run specific tests based on what's available
         if (window.testStep1) testStep1(TestRunner);
         if (window.testStep2) testStep2(TestRunner);
+        if (window.testStep3) testStep3(TestRunner);
 
         TestRunner.run();
     </script>
