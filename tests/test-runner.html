@@ -28,6 +28,7 @@
     <script src="../js/map.js"></script>
     <script src="../js/player.js"></script>
     <script src="../js/raycaster.js"></script>
+    <script src="../js/textures.js"></script>
     <script src="../js/renderer.js"></script>
     <!-- Note: main.js starts the game loop automatically, which might be undesirable for tests. 
          We might need to refactor main.js to only start if not testing, or just use what we need. 
@@ -41,6 +42,7 @@
     <script src="test-step3.js"></script>
     <script src="test-step4.js"></script>
     <script src="test-step5.js"></script>
+    <script src="test-step6.js"></script>
 
     <script>
         // Run specific tests based on what's available
@@ -49,6 +51,7 @@
         if (window.testStep3) testStep3(TestRunner);
         if (window.testStep4) testStep4(TestRunner);
         if (window.testStep5) testStep5(TestRunner);
+        if (window.testStep6) testStep6(TestRunner);
 
         TestRunner.run();
     </script>

@@ -67,12 +67,28 @@ class Raycaster {
         // But we are using angle. So `dist` is Euclidean distance.
         // Let's stick to returning Euclidean distance and intersection details.
 
+        // Calculate distance projected on camera direction
+        // We use the Euclidean distance 'dist' from DDA for depth, but we need wallX for texture.
+
+        let wallX;
+        if (side === 0) {
+            wallX = posY + dist * rayDirY;
+        } else {
+            wallX = posX + dist * rayDirX;
+        }
+        wallX -= Math.floor(wallX);
+
+        // Invert wallX if needed
+        if (side === 0 && rayDirX > 0) wallX = 1.0 - wallX;
+        if (side === 1 && rayDirY < 0) wallX = 1.0 - wallX;
+
         return {
             distance: dist,
-            hit: hit, // Cell type
+            hit: hit,
             side: side,
             mapX: mapX,
-            mapY: mapY
+            mapY: mapY,
+            wallX: wallX
         };
     }
 }

@@ -8,7 +8,7 @@ class Renderer {
         this.fov = Math.PI / 3; // 60 degrees
     }
 
-    render3D(player, map, raycaster) {
+    render3D(player, map, raycaster, textureManager) {
         // Draw ceiling and floor
         this.ctx.fillStyle = '#333333'; // Ceiling
         this.ctx.fillRect(this.x, this.y, this.width, this.height / 2);
@@ -24,53 +24,43 @@ class Renderer {
 
             if (result.hit > 0) {
                 // Correct fish-eye effect
-                // perpWallDist = dist * cos(rayAngle - playerAngle)
                 let perpDist = result.distance * Math.cos(rayAngle - player.angle);
 
                 // Calculate height of line to draw on screen
-                // h = ScreenHeight / dist
                 let lineHeight = Math.floor(this.height / perpDist);
 
-                // Calculate lowest and highest pixel to fill in current stripe
-                let drawStart = Math.floor(-lineHeight / 2 + this.height / 2);
-                let drawEnd = Math.floor(lineHeight / 2 + this.height / 2);
+                // Texture Mapping
+                let tex = textureManager.getTexture(result.hit);
 
-                // Clamp
-                // if (drawStart < 0) drawStart = 0;
-                // if (drawEnd >= this.height) drawEnd = this.height - 1;
+                if (tex) {
+                    let texX = Math.floor(result.wallX * textureManager.size);
 
-                // Color based on wall type
-                let color = map.getColor(result.hit);
+                    // Destination rectangle (strip)
+                    let drawY = (this.height - lineHeight) / 2;
+
+                    try {
+                        this.ctx.drawImage(
+                            tex,
+                            texX, 0, 1, textureManager.size,
+                            this.x + x, this.y + drawY, 1, lineHeight
+                        );
+                    } catch (e) {
+                        this.ctx.fillStyle = '#ff00ff'; // Error color
+                        this.ctx.fillRect(this.x + x, this.y + drawY, 1, lineHeight);
+                    }
+                } else {
+                    // Fallback to solid color
+                    let color = map.getColor(result.hit);
+                    this.ctx.fillStyle = color;
+                    let drawY = (this.height - lineHeight) / 2;
+                    this.ctx.fillRect(this.x + x, this.y + drawY, 1, lineHeight);
+                }
 
                 // Darken side walls
                 if (result.side === 1) {
-                    color = this.darkenColor(color, 0.7);
-                }
-
-                // Draw vertical line
-                this.ctx.fillStyle = color;
-                // this.ctx.fillRect(this.x + x, this.y + drawStart, 1, drawEnd - drawStart);
-
-                // Clipping to viewport
-                let yStart = Math.max(0, drawStart);
-                let yEnd = Math.min(this.height, drawEnd);
-                let h = yEnd - yStart;
-
-                if (h > 0) {
-                    this.ctx.fillRect(this.x + x, this.y + drawStart + (this.height / 2 - lineHeight / 2), 1, lineHeight);
-                    // Simplified: just ensure we draw at viewport offset
-                    // Correct:
-                    let screenY = this.y + Math.max(0, -lineHeight / 2 + this.height / 2);
-                    let screenH = Math.min(this.height, lineHeight);
-                    // The clamp logic is a bit tricky with viewport offset.
-
-                    // Let's do simple rect with clipping via save/restore or just math.
-                    // Math way:
-                    let lineTop = (this.height - lineHeight) / 2;
-                    let clipTop = Math.max(0, lineTop);
-                    let clipBottom = Math.min(this.height, lineTop + lineHeight);
-
-                    this.ctx.fillRect(this.x + x, this.y + clipTop, 1, clipBottom - clipTop);
+                    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+                    let drawY = (this.height - lineHeight) / 2;
+                    this.ctx.fillRect(this.x + x, this.y + drawY, 1, lineHeight);
                 }
             }
         }

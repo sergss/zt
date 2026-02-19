@@ -13,6 +13,7 @@ let map;
 let player;
 let raycaster;
 let renderer;
+let textureManager;
 
 function init() {
     console.log('Game Initialized');
@@ -24,6 +25,7 @@ function init() {
     // Initialize Raycaster and Renderer for Step 5
     raycaster = new Raycaster(map);
     renderer = new Renderer(ctx, CONFIG);
+    textureManager = new TextureManager();
 
     requestAnimationFrame(gameLoop);
 }
@@ -40,8 +42,8 @@ function draw() {
     ctx.fillRect(0, 0, CONFIG.SCREEN_WIDTH, CONFIG.SCREEN_HEIGHT);
 
     // Draw 3D View (Step 5)
-    if (renderer && player && map && raycaster) {
-        renderer.render3D(player, map, raycaster);
+    if (renderer && player && map && raycaster && textureManager) {
+        renderer.render3D(player, map, raycaster, textureManager);
     }
 
     // Draw Map (2D debug view) - Keep it for now, maybe move it or toggle it?
