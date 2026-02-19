@@ -1,11 +1,19 @@
 class Enemy extends Sprite {
     constructor(x, y, type) {
         super(x, y, type);
+
+        // Ensure strict adherence to Step 11 properties
+        this.x = x;
+        this.y = y;
         this.hp = 100;
-        this.state = 'idle'; // idle, walk, attack, pain, death
+        this.type = type; // zombie, soldier, alien
+        this.state = 'IDLE'; // IDLE as requested
+        this.sprite = type; // The texture ID is used as the sprite name
+        this.textureId = this.sprite; // Mapper for the renderer
+
         this.speed = 2.0;
-        this.lastSeenPlayerTime = 0;
         this.active = true;
+        this.visible = true; // Make sure they are visible for renderer
     }
 
     update(dt, player, map) {
@@ -14,27 +22,29 @@ class Enemy extends Sprite {
         // Basic billboarding is handled by renderer via Sprite properties
         this.updateDistance(player);
 
-        // Simple state logic placeholder
-        // If dead, change texture?
-        if (this.hp <= 0) {
-            this.state = 'dead';
-            this.textureId = 'enemyDead'; // Need this texture
-            // Don't collide? 
+        if (this.hp <= 0 && this.state !== 'DEAD') {
+            this.state = 'DEAD';
+            this.sprite = 'enemyDead'; // Switch to dead texture
+            this.textureId = this.sprite;
+            // Removed from active logic, but keep in sprite list for rendering corpse?
+            // Optional for now.
             return;
         }
 
-        // TODO: AI Logic in Step 13
+        // For Step 11, enemies just stand "IDLE".
+        // State is explicitly set to IDLE in constructor.
     }
 
     takeDamage(amount) {
         this.hp -= amount;
         if (this.hp <= 0) {
             this.hp = 0;
-            this.state = 'dead';
-            console.log('Enemy died');
+            this.state = 'DEAD';
+            this.sprite = 'enemyDead';
+            this.textureId = this.sprite;
+            console.log(this.type + ' died');
         } else {
-            this.state = 'pain';
-            console.log('Enemy hit, HP:', this.hp);
+            console.log(this.type + ' hit, HP:', this.hp);
         }
     }
 }

@@ -18,7 +18,8 @@ class TextureManager {
             'medkit', 'healthBig', 'healthSmall', 'armor', 'key',
             'ammo', 'ammoBullets', 'ammoShells', 'ammoBelt', 'ammoRockets', 'ammoFuel', 'ammoCells',
             'weaponShotgun', 'weaponAssaultRifle', 'weaponMachinegun', 'weaponRocketLauncher', 'weaponFlamethrower', 'weaponLaser',
-            'enemyGuard', 'enemyDead'
+            'enemyGuard', 'enemyDead', // Keep legacy for tests if any
+            'zombie', 'soldier', 'alien'
         ];
         items.forEach(type => {
             this.textures[type] = this.generateTexture(type);
@@ -30,7 +31,8 @@ class TextureManager {
             'medkit', 'healthBig', 'healthSmall', 'armor', 'key', 'ammo',
             'ammoBullets', 'ammoShells', 'ammoBelt', 'ammoRockets', 'ammoFuel', 'ammoCells',
             'weaponShotgun', 'weaponAssaultRifle', 'weaponMachinegun', 'weaponRocketLauncher', 'weaponFlamethrower', 'weaponLaser',
-            'enemyGuard', 'enemyDead'
+            'enemyGuard', 'enemyDead',
+            'zombie', 'soldier', 'alien'
         ].includes(type)) {
             return this.generateItemTexture(type);
         }
@@ -317,6 +319,64 @@ class TextureManager {
             ctx.arc(32, 46, 10, 0, Math.PI * 2);
             ctx.fill();
         }
+        // New Enemies for Step 11
+        else if (type === 'zombie') {
+            // Green Humanoid
+            // Skin
+            ctx.fillStyle = '#55aa55';
+            ctx.fillRect(24, 4, 16, 16); // Head
+            // Body (Ragged clothes)
+            ctx.fillStyle = '#445544';
+            ctx.fillRect(20, 20, 24, 24);
+            // Legs
+            ctx.fillStyle = '#334433';
+            ctx.fillRect(22, 44, 8, 20);
+            ctx.fillRect(34, 44, 8, 20);
+            // Arms (outstretched)
+            ctx.fillStyle = '#55aa55';
+            ctx.fillRect(10, 24, 10, 8);
+            ctx.fillRect(44, 24, 10, 8);
+        }
+        else if (type === 'soldier') {
+            // Red Humanoid (Guard replacement)
+            // Skin
+            ctx.fillStyle = '#ffcccc';
+            ctx.fillRect(24, 4, 16, 16);
+            // Helmet
+            ctx.fillStyle = '#550000';
+            ctx.fillRect(22, 2, 20, 6);
+            // Body (Red Uniform)
+            ctx.fillStyle = '#aa0000';
+            ctx.fillRect(20, 20, 24, 24);
+            // Legs
+            ctx.fillStyle = '#550000';
+            ctx.fillRect(22, 44, 8, 20);
+            ctx.fillRect(34, 44, 8, 20);
+            // Gun
+            ctx.fillStyle = '#111';
+            ctx.fillRect(12, 30, 24, 6);
+        }
+        else if (type === 'alien') {
+            // Purple Humanoid
+            // Head (Big)
+            ctx.fillStyle = '#aa00aa';
+            ctx.beginPath();
+            ctx.ellipse(32, 12, 10, 12, 0, 0, Math.PI * 2);
+            ctx.fill();
+            // Eyes (Black)
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.ellipse(28, 12, 3, 5, 0.2, 0, Math.PI * 2);
+            ctx.ellipse(36, 12, 3, 5, -0.2, 0, Math.PI * 2);
+            ctx.fill();
+            // Body (Slim)
+            ctx.fillStyle = '#880088';
+            ctx.fillRect(24, 24, 16, 20);
+            // Legs
+            ctx.fillStyle = '#660066';
+            ctx.fillRect(24, 44, 6, 20);
+            ctx.fillRect(34, 44, 6, 20);
+        } // End of generateItemTexture
 
         return canvas;
     }

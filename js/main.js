@@ -50,11 +50,13 @@ function init() {
     // Make them visible by default
     sprites.forEach(s => s.visible = true);
 
-    // Step 11: Enemies
+    // Step 11: Enemies (5 enemies of different types)
     enemies = [
-        new Enemy(10.5, 7.5, 'enemyGuard'),
-        new Enemy(12.5, 7.5, 'enemyGuard'),
-        new Enemy(11.5, 9.5, 'enemyGuard')
+        new Enemy(14.5, 14.5, 'soldier'),
+        new Enemy(16.5, 14.5, 'soldier'),
+        new Enemy(15.5, 16.5, 'zombie'),
+        new Enemy(14.5, 17.5, 'zombie'),
+        new Enemy(17.5, 17.5, 'alien')
     ];
 
     // Initialize Raycaster and Renderer for Step 5
@@ -142,7 +144,9 @@ function draw() {
 
     // Draw HUD (Step 8)
     if (hud && player) {
-        hud.render(ctx, player, 0); // 0 enemies for now
+        // Count active enemies (hp > 0)
+        const enemiesLeft = enemies.filter(e => e.hp > 0).length;
+        hud.render(ctx, player, enemiesLeft);
     }
 
     // Draw Map (2D debug view)
