@@ -223,6 +223,14 @@ class Renderer {
             this.ctx.fillStyle = '#000';
             this.ctx.fillRect(centerX - 5, bottomY - 120 + recoilY, 10, 120);
         }
+        else if (idx === 3) { // Machinegun
+            this.ctx.fillStyle = '#222';
+            // Barrels
+            this.ctx.fillRect(centerX - 20, bottomY - 100 + recoilY, 10, 100);
+            this.ctx.fillRect(centerX + 10, bottomY - 100 + recoilY, 10, 100);
+            this.ctx.fillStyle = '#444';
+            this.ctx.fillRect(centerX - 25, bottomY - 60 + recoilY, 50, 60);
+        }
         else if (idx === 4) { // Rocket Launcher
             this.ctx.fillStyle = '#343';
             this.ctx.fillRect(centerX - 20, bottomY - 110 + recoilY, 40, 110);
@@ -231,12 +239,25 @@ class Renderer {
             this.ctx.arc(centerX, bottomY - 110 + recoilY, 15, 0, Math.PI * 2);
             this.ctx.fill();
         }
+        else if (idx === 5) { // Flamethrower
+            this.ctx.fillStyle = '#a40';
+            this.ctx.fillRect(centerX - 15, bottomY - 100 + recoilY, 30, 100);
+            this.ctx.fillStyle = '#f80'; // Pilot light
+            this.ctx.fillRect(centerX - 2, bottomY - 105 + recoilY, 4, 10);
+        }
+        else if (idx === 6) { // Laser
+            this.ctx.fillStyle = '#ddd';
+            this.ctx.fillRect(centerX - 20, bottomY - 100 + recoilY, 40, 100);
+            this.ctx.fillStyle = '#00f'; // Blue glow
+            this.ctx.fillRect(centerX - 5, bottomY - 100 + recoilY, 10, 100);
+            this.ctx.strokeStyle = '#0ff';
+            this.ctx.lineWidth = 2;
+            this.ctx.strokeRect(centerX - 5, bottomY - 100 + recoilY, 10, 100);
+        }
         else {
+            // Default
             this.ctx.fillStyle = '#555';
             this.ctx.fillRect(centerX - 30, bottomY - 90 + recoilY, 60, 90);
-            this.ctx.fillStyle = '#fff';
-            this.ctx.font = '12px monospace';
-            if (player.weapon) this.ctx.fillText(player.weapon.substr(0, 4), centerX - 15, bottomY - 40 + recoilY);
         }
 
         if (player.shootTimer > 0.05) {

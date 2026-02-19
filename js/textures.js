@@ -142,6 +142,19 @@ class TextureManager {
             // Horizontal bar
             ctx.fillRect(22, center - thick / 2, 20, thick);
         }
+        else if (type === 'healthSmall') {
+            // Blue potion/vial
+            ctx.fillStyle = '#0000aa';
+            ctx.beginPath();
+            ctx.moveTo(24, 48);
+            ctx.lineTo(40, 48);
+            ctx.lineTo(40, 32);
+            ctx.lineTo(32, 24);
+            ctx.lineTo(24, 32);
+            ctx.fill();
+            ctx.fillStyle = '#4444ff';
+            ctx.fillRect(28, 50, 8, 4); // Base
+        }
         else if (type === 'armor') {
             // Shield Shape
             ctx.fillStyle = '#00aa00'; // Green Shield
