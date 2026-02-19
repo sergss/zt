@@ -1,26 +1,55 @@
 function testStep10(T) {
     T.assert(typeof Sprite === 'function', 'Sprite class defined');
 
-    const s1 = new Sprite(10, 10, 'medkit');
-    const s2 = new Sprite(20, 20, 'ammo');
+    // Test Pickup Logic
+    const map = new GameMap(testLevel); // Need map for player
+    const p = new Player(1.5, 1.5, 0, map);
 
-    const p = { x: 0, y: 0 };
+    // Reset Stats
+    p.hp = 50;
+    p.armor = 0;
+    p.weapons = [true, false, false, false, false, false, false]; // Only pistol
+    p.ammo = {
+        bullets: 0, shells: 0, belt: 0, rockets: 0, fuel: 0, cells: 0, infinite: 999
+    };
 
-    s1.updateDistance(p); // DistSq = 100+100 = 200
-    s2.updateDistance(p); // DistSq = 400+400 = 800
+    // 1. Health Pickup
+    const s1 = new Sprite(0.1, 0.1, 'healthBig'); // Close
+    s1.updateDistance(p);
+    T.assert(s1.active, 'Sprite active initially');
+    const picked = s1.checkPickup(p);
+    T.assert(picked, 'Medkit picked up');
+    T.assert(!s1.active, 'Sprite inactive after pickup');
+    T.assertEqual(p.hp, 75, 'HP increased by 25');
 
-    T.assert(s1.distance === 200, 'Distance calc correct s1');
-    T.assert(s2.distance === 800, 'Distance calc correct s2');
+    // 2. Armor Pickup
+    const sArmor = new Sprite(0.1, 0.1, 'armor');
+    sArmor.updateDistance(p);
+    sArmor.checkPickup(p);
+    T.assertEqual(p.armor, 25, 'Armor increased by 25');
 
-    const sprites = [s1, s2];
-    // Sort logic used in renderer: b.dist - a.dist (Descending/Far to Near)
-    sprites.sort((a, b) => b.distance - a.distance);
+    // 3. Weapon Pickup (Shotgun)
+    const sShotgun = new Sprite(0.1, 0.1, 'weaponShotgun');
+    sShotgun.updateDistance(p);
+    sShotgun.checkPickup(p);
+    T.assert(p.weapons[1], 'Shotgun unlocked');
+    T.assertEqual(p.ammo.shells, 8, 'Shotgun ammo +8');
 
-    T.assertEqual(sprites[0], s2, 'Sorted: Far sprite first');
-    T.assertEqual(sprites[1], s1, 'Sorted: Near sprite second');
+    // 4. New Weapons
+    const sRifle = new Sprite(0.1, 0.1, 'weaponAssaultRifle');
+    sRifle.updateDistance(p);
+    sRifle.checkPickup(p);
+    T.assert(p.weapons[2], 'Assault Rifle unlocked');
+    T.assertEqual(p.ammo.bullets, 20, 'Bullets +20'); // 0 + 20
 
-    // Check texture generation
+    const sRocket = new Sprite(0.1, 0.1, 'weaponRocketLauncher');
+    sRocket.updateDistance(p);
+    sRocket.checkPickup(p);
+    T.assert(p.weapons[4], 'Rocket Launcher unlocked');
+    T.assertEqual(p.ammo.rockets, 5, 'Rockets +5');
+
+    // 5. Texture Gen
     const tm = new TextureManager();
-    const tex = tm.getTexture('medkit');
-    T.assert(tex instanceof HTMLCanvasElement, 'Medkit texture generated');
+    const tex = tm.getTexture('weaponLaser');
+    T.assert(tex instanceof HTMLCanvasElement, 'Laser texture generated');
 }

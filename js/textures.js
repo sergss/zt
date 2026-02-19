@@ -14,13 +14,22 @@ class TextureManager {
         this.textures[5] = this.generateTexture('door');
 
         // Items
-        this.textures['medkit'] = this.generateTexture('medkit');
-        this.textures['ammo'] = this.generateTexture('ammo');
-        this.textures['key'] = this.generateTexture('key');
+        const items = [
+            'medkit', 'healthBig', 'healthSmall', 'armor', 'key',
+            'ammo', 'ammoBullets', 'ammoShells', 'ammoBelt', 'ammoRockets', 'ammoFuel', 'ammoCells',
+            'weaponShotgun', 'weaponAssaultRifle', 'weaponMachinegun', 'weaponRocketLauncher', 'weaponFlamethrower', 'weaponLaser'
+        ];
+        items.forEach(type => {
+            this.textures[type] = this.generateTexture(type);
+        });
     }
 
     generateTexture(type) {
-        if (['medkit', 'ammo', 'key'].includes(type)) {
+        if ([
+            'medkit', 'healthBig', 'healthSmall', 'armor', 'key', 'ammo',
+            'ammoBullets', 'ammoShells', 'ammoBelt', 'ammoRockets', 'ammoFuel', 'ammoCells',
+            'weaponShotgun', 'weaponAssaultRifle', 'weaponMachinegun', 'weaponRocketLauncher', 'weaponFlamethrower', 'weaponLaser'
+        ].includes(type)) {
             return this.generateItemTexture(type);
         }
 
@@ -115,32 +124,65 @@ class TextureManager {
         // Transparent BG
         // ctx.clearRect(0,0,this.size, this.size); 
 
-        if (type === 'medkit') {
-            // White box
-            ctx.fillStyle = '#eeeeee';
-            ctx.fillRect(10, 10, 44, 44);
-            // Red shadows
-            ctx.fillStyle = '#cccccc';
-            ctx.fillRect(50, 10, 4, 44);
-            ctx.fillRect(10, 50, 44, 4);
+        if (type === 'medkit' || type === 'healthBig') {
+            // White Square
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(16, 16, 32, 32);
+            // Border (optional, but good for visibility)
+            ctx.strokeStyle = '#cccccc';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(16, 16, 32, 32);
 
             // Red Cross
             ctx.fillStyle = '#cc0000';
             const center = 32;
             const thick = 8;
-            ctx.fillRect(center - thick / 2, 20, thick, 24);
-            ctx.fillRect(20, center - thick / 2, 24, thick);
+            // Vertical bar
+            ctx.fillRect(center - thick / 2, 22, thick, 20);
+            // Horizontal bar
+            ctx.fillRect(22, center - thick / 2, 20, thick);
         }
-        else if (type === 'ammo') {
-            // Green Box
-            ctx.fillStyle = '#004400';
-            ctx.fillRect(10, 20, 44, 30);
-            ctx.fillStyle = '#006600';
-            ctx.fillRect(12, 22, 40, 26);
+        else if (type === 'armor') {
+            // Shield Shape
+            ctx.fillStyle = '#00aa00'; // Green Shield
+            ctx.beginPath();
+            ctx.moveTo(16, 16); // Top Left
+            ctx.lineTo(48, 16); // Top Right
+            ctx.lineTo(48, 40); // Side Right
+            ctx.lineTo(32, 56); // Point
+            ctx.lineTo(16, 40); // Side Left
+            ctx.closePath();
+            ctx.fill();
 
+            // Inner Detail (Lighter Green)
+            ctx.fillStyle = '#00cc00';
+            ctx.beginPath();
+            ctx.moveTo(22, 22);
+            ctx.lineTo(42, 22);
+            ctx.lineTo(42, 38);
+            ctx.lineTo(32, 48);
+            ctx.lineTo(22, 38);
+            ctx.closePath();
+            ctx.fill();
+        }
+        else if (type === 'ammo' || type === 'ammoBullets') {
+            // Green Box
+            ctx.fillStyle = '#444444';
+            ctx.fillRect(20, 32, 24, 24); // Grey case
+            ctx.fillStyle = '#aaaa00'; // Bullets
+            ctx.fillRect(22, 34, 4, 4);
+            ctx.fillRect(28, 34, 4, 4);
+            ctx.fillRect(34, 34, 4, 4);
+        }
+        else if (type === 'ammoShells') {
+            // Red Box
+            ctx.fillStyle = '#aa0000';
+            ctx.fillRect(16, 32, 32, 20);
+            ctx.fillStyle = '#ff0000';
+            ctx.fillRect(18, 34, 28, 16);
             // Label
-            ctx.fillStyle = '#ffff00';
-            ctx.fillRect(20, 30, 24, 8);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(20, 40, 24, 4);
         }
         else if (type === 'key') {
             // Yellow Card
@@ -153,6 +195,84 @@ class TextureManager {
             ctx.fillRect(24, 16, 16, 32);
             ctx.fillStyle = '#cccc00';
             ctx.fillRect(28, 20, 8, 24);
+        }
+        else if (type === 'weaponShotgun') {
+            // Long black gun on floor
+            ctx.fillStyle = '#111111';
+            ctx.fillRect(10, 32, 44, 8); // Barrel
+            ctx.fillStyle = '#553311'; // Stock
+            ctx.fillRect(40, 30, 14, 12);
+        }
+        else if (type === 'weaponAssaultRifle') {
+            // Grey Rifle
+            ctx.fillStyle = '#444444';
+            ctx.fillRect(10, 32, 30, 8);
+            ctx.fillStyle = '#111111';
+            ctx.fillRect(40, 32, 14, 10); // Stock
+            ctx.fillRect(20, 26, 4, 6); // Sight
+            ctx.fillRect(24, 40, 4, 8); // Mag
+        }
+        else if (type === 'weaponMachinegun') {
+            // Big rapid fire gun (Minigun style?)
+            ctx.fillStyle = '#222222';
+            ctx.fillRect(10, 28, 40, 12);
+            ctx.fillStyle = '#555555';
+            ctx.fillRect(10, 30, 40, 2);
+            ctx.fillRect(10, 34, 40, 2);
+        }
+        else if (type === 'weaponRocketLauncher') {
+            // Green Tube
+            ctx.fillStyle = '#224422';
+            ctx.fillRect(8, 26, 48, 16);
+            ctx.fillStyle = '#000000';
+            ctx.beginPath();
+            ctx.arc(10, 34, 6, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        else if (type === 'weaponFlamethrower') {
+            // Red/Orange tanks + nozzle
+            ctx.fillStyle = '#aa4400';
+            ctx.fillRect(30, 20, 20, 24); // Tank
+            ctx.fillStyle = '#333333';
+            ctx.fillRect(10, 30, 30, 6); // Nozzle
+        }
+        else if (type === 'weaponLaser') {
+            // Futuristic White/Blue
+            ctx.fillStyle = '#eeeeee';
+            ctx.fillRect(14, 30, 36, 10);
+            ctx.fillStyle = '#00ffff';
+            ctx.fillRect(16, 32, 30, 2); // Glow
+        }
+        else if (type === 'ammoBelt') {
+            // Ammo Belt / Box
+            ctx.fillStyle = '#333300';
+            ctx.fillRect(16, 24, 32, 24);
+            ctx.fillStyle = '#ffff00';
+            for (let i = 0; i < 4; i++) ctx.fillRect(18 + i * 8, 26, 4, 20); // Bullets
+        }
+        else if (type === 'ammoRockets') {
+            // Rocket Bundle
+            ctx.fillStyle = '#335533';
+            ctx.fillRect(20, 20, 10, 30);
+            ctx.fillRect(34, 20, 10, 30);
+            ctx.fillStyle = '#aa0000'; // Tips
+            ctx.beginPath(); ctx.moveTo(20, 20); ctx.lineTo(25, 10); ctx.lineTo(30, 20); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(34, 20); ctx.lineTo(39, 10); ctx.lineTo(44, 20); ctx.fill();
+        }
+        else if (type === 'ammoFuel') {
+            // Red Canister
+            ctx.fillStyle = '#cc0000';
+            ctx.fillRect(20, 16, 24, 40);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = "10px monospace";
+            ctx.fillText("GAS", 22, 40);
+        }
+        else if (type === 'ammoCells') {
+            // Battery Pack
+            ctx.fillStyle = '#444444';
+            ctx.fillRect(20, 20, 24, 32);
+            ctx.fillStyle = '#00ffff';
+            ctx.fillRect(24, 24, 16, 20); // Energy
         }
 
         return canvas;

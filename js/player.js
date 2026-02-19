@@ -9,7 +9,7 @@ class Player {
         this.rotSpeed = 3.0;  // Radians per second
 
         // Stats
-        this.hp = 100;
+        this.hp = 55;
         this.armor = 0;
 
         // Weapon System
@@ -20,12 +20,13 @@ class Player {
         this.weapon = WEAPONS[this.currentWeaponIndex].name;
 
         this.ammo = {
-            bullets: 200, // Pistol/Assault Rifle
-            shells: 50,   // Shotgun
-            belt: 200,    // MG
-            rockets: 20,  // Rocket
-            fuel: 100,    // Flamethrower
-            cells: 100    // Laser
+            bullets: 20,  // Pistol/Assault Rifle
+            shells: 0,    // Shotgun
+            belt: 0,      // MG
+            rockets: 0,   // Rocket
+            fuel: 0,      // Flamethrower
+            cells: 0,     // Laser
+            infinite: 999
         };
 
         this.lastShotTime = 0;

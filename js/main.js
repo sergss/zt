@@ -24,11 +24,27 @@ function init() {
     map = new GameMap(testLevel);
     player = new Player(1.5, 1.5, 0, map);
 
-    // Step 10: Sprites
+    // Step 10: Sprites - Placing all types for verification
     sprites = [
-        new Sprite(3.5, 3.5, 'medkit'),
-        new Sprite(2.5, 3.5, 'ammo'),
-        new Sprite(3.5, 2.5, 'key')
+        new Sprite(3.5, 6.5, 'healthBig'),     // Medkit (+25 HP)
+        new Sprite(4.5, 6.5, 'armor'),         // Armor (+25)
+        new Sprite(5.5, 6.5, 'key'),           // Key
+
+        // Weapons
+        new Sprite(2.5, 6.5, 'weaponShotgun'),
+        new Sprite(2.5, 7.5, 'weaponAssaultRifle'),
+        new Sprite(2.5, 8.5, 'weaponMachinegun'),
+        new Sprite(3.5, 8.5, 'weaponRocketLauncher'),
+        new Sprite(4.5, 8.5, 'weaponFlamethrower'),
+        new Sprite(5.5, 8.5, 'weaponLaser'),
+
+        // Ammo
+        new Sprite(6.5, 6.5, 'ammoBullets'),
+        new Sprite(6.5, 7.5, 'ammoShells'),
+        new Sprite(6.5, 8.5, 'ammoBelt'),
+        new Sprite(7.5, 6.5, 'ammoRockets'),
+        new Sprite(7.5, 7.5, 'ammoFuel'),
+        new Sprite(7.5, 8.5, 'ammoCells')
     ];
     // Make them visible by default
     sprites.forEach(s => s.visible = true);
@@ -58,20 +74,6 @@ function update(dt) {
             // 1. Try to shoot weapon
             if (player.shoot(Date.now() / 1000)) {
                 // Shot fired successfully
-                // Logic for door opening moved: Doors can be opened by "using" (Space) or maybe shooting triggers it?
-                // For now, let's keep space as "use" AND "shoot" OR separate them.
-                // Classic Wolf3D: Ctrl to shoot, Space to Open.
-                // Our config: Space is shoot. 
-                // Let's make shooting ALSO open doors if close enough? 
-
-                // Or: Check door if NOT fired? No, Space is primarily shoot.
-                // Let's do: Attempt shoot. If shoot, also check for door hit?
-                // Actually, Wolf3D: Space opens doors. Ctrl shoots.
-
-                // User's Input Map: shoot = Space.
-                // If we want space to open doors, we might have issues if we shoot every time.
-                // Let's assume Space = Shoot AND Open Door (if in front).
-
                 const dist = 1.0;
                 const targetX = Math.floor(player.x + Math.cos(player.angle) * dist);
                 const targetY = Math.floor(player.y + Math.sin(player.angle) * dist);
@@ -81,13 +83,23 @@ function update(dt) {
                 }
             } else {
                 // If didn't fire (cooldown or no ammo), still try to open door?
-                // Yes, useful for when out of ammo or just wanting to open.
                 const dist = 1.0;
                 const targetX = Math.floor(player.x + Math.cos(player.angle) * dist);
                 const targetY = Math.floor(player.y + Math.sin(player.angle) * dist);
 
                 if (map.getDoor(targetX, targetY)) {
                     map.tryOpenDoor(targetX, targetY);
+                }
+            }
+        }
+
+        // Sprite Updates (Step 10 pick up)
+        for (let i = sprites.length - 1; i >= 0; i--) {
+            const sprite = sprites[i];
+            if (sprite.active) {
+                sprite.updateDistance(player);
+                if (sprite.checkPickup(player)) {
+                    console.log('Picked up:', sprite.type);
                 }
             }
         }
@@ -104,15 +116,12 @@ function draw() {
     ctx.fillRect(0, 0, CONFIG.SCREEN_WIDTH, CONFIG.SCREEN_HEIGHT);
 
     // Draw 3D View (Step 5)
-    // Draw 3D View (Step 5)
     if (renderer && player && map && raycaster && textureManager) {
         renderer.render3D(player, map, raycaster, textureManager);
         // Step 10: Render Sprites
         renderer.renderSprites(player, sprites, textureManager);
         renderer.renderWeapon(player);
     }
-
-
 
     // Draw HUD (Step 8)
     if (hud && player) {
