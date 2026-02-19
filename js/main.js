@@ -33,6 +33,22 @@ function init() {
 function update(dt) {
     if (player) {
         player.update(dt);
+
+        // Door Interaction (Space)
+        if (Input.isActionActive('shoot')) {
+            // Simple interaction: Check cell in front of player
+            const dist = 1.0;
+            const targetX = Math.floor(player.x + Math.cos(player.angle) * dist);
+            const targetY = Math.floor(player.y + Math.sin(player.angle) * dist);
+
+            if (map.getDoor(targetX, targetY)) {
+                map.tryOpenDoor(targetX, targetY);
+            }
+        }
+    }
+
+    if (map) {
+        map.update(dt);
     }
 }
 

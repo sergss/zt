@@ -27,15 +27,73 @@ class GameMap {
         this.grid = grid;
         this.width = grid[0].length;
         this.height = grid.length;
-        this.cellSize = 16; // Using 16px as per tasks.md for debugging view
+        this.cellSize = 16;
+
+        this.doors = []; // List of {x, y, state, offset}
+        this.initDoors();
+    }
+
+    initDoors() {
+        for (let y = 0; y < this.height; y++) {
+            for (let x = 0; x < this.width; x++) {
+                if (this.grid[y][x] === 9) {
+                    this.doors.push({
+                        x, y,
+                        state: 'CLOSED', // CLOSED, OPENING, OPEN, CLOSING
+                        offset: 0.0, // 0.0 = closed, 1.0 = fully open
+                        timer: 0
+                    });
+                }
+            }
+        }
+    }
+
+    getDoor(x, y) {
+        return this.doors.find(d => d.x === x && d.y === y);
+    }
+
+    update(dt) {
+        for (let door of this.doors) {
+            if (door.state === 'OPENING') {
+                door.offset += dt * 2.0; // Speed
+                if (door.offset >= 1.0) {
+                    door.offset = 1.0;
+                    door.state = 'OPEN';
+                    door.timer = 0;
+                }
+            } else if (door.state === 'OPEN') {
+                door.timer += dt;
+                if (door.timer > 3.0) { // Auto close after 3s
+                    door.state = 'CLOSING';
+                }
+            } else if (door.state === 'CLOSING') {
+                door.offset -= dt * 2.0;
+                if (door.offset <= 0.0) {
+                    door.offset = 0.0;
+                    door.state = 'CLOSED';
+                }
+            }
+        }
+    }
+
+    tryOpenDoor(x, y) {
+        const door = this.getDoor(x, y);
+        if (door && (door.state === 'CLOSED' || door.state === 'CLOSING')) {
+            door.state = 'OPENING';
+        }
     }
 
     isWall(x, y) {
         if (!this.isInBounds(x, y)) return true;
-        return this.grid[y][x] > 0 && this.grid[y][x] !== 9; // 9 is door (passable if open, but for now just treat type 1-5 as solid)
-        // Adjusting logic: tasks.md says 1-5 are walls. 9 is door. 
-        // For basic collision, usually doors are walls until opened.
-        // Step 3 tests just check isWall(0,0) (type 1) vs inner (type 0).
+        const type = this.grid[y][x];
+        if (type === 0) return false;
+        if (type === 9) {
+            const door = this.getDoor(x, y);
+            return door && door.state !== 'OPEN';
+            // Simplified collision: solid unless fully open. 
+            // Ideally check offset vs player position but this is enough for Step 7 basic.
+        }
+        return true;
     }
 
     getCell(x, y) {
@@ -52,7 +110,14 @@ class GameMap {
             for (let x = 0; x < this.width; x++) {
                 const cell = this.grid[y][x];
                 if (cell > 0) {
-                    ctx.fillStyle = this.getColor(cell);
+                    if (cell === 9) {
+                        // Door
+                        const door = this.getDoor(x, y);
+                        ctx.fillStyle = (door.state === 'OPEN') ? '#00aa00' : '#aa00aa';
+                        // Draw based on offset? Just fill for debug
+                    } else {
+                        ctx.fillStyle = this.getColor(cell);
+                    }
                     ctx.fillRect(offsetX + x * this.cellSize, offsetY + y * this.cellSize, this.cellSize, this.cellSize);
                 } else {
                     ctx.strokeStyle = '#333';

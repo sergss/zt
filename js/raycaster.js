@@ -40,12 +40,12 @@ class Raycaster {
         let maxDist = 20.0; // Max draw distance
 
         while (hit === 0 && dist < maxDist) {
-            // Jump to next map square, OR in x-direction, OR in y-direction
+            // Jump to next map square
             if (sideDistX < sideDistY) {
                 sideDistX += deltaDistX;
                 mapX += stepX;
                 side = 0;
-                dist = sideDistX - deltaDistX; // Actual distance is previous sideDist
+                dist = sideDistX - deltaDistX;
             } else {
                 sideDistY += deltaDistY;
                 mapY += stepY;
@@ -53,9 +53,45 @@ class Raycaster {
                 dist = sideDistY - deltaDistY;
             }
 
-            // Check if ray has hit a wall
-            if (this.map.isWall(mapX, mapY)) {
-                hit = this.map.getCell(mapX, mapY);
+            // Check if ray has hit a wall or object
+            if (this.map.isInBounds(mapX, mapY)) {
+                let type = this.map.getCell(mapX, mapY);
+                if (type > 0) {
+                    if (type === 9) {
+                        // Door Frame handling (simplified: checks if ray hits the 'solid' part of the sliding door)
+                        // Note: To do this properly requires recalculating 'wallX' here to see if we hit the door or the gap.
+
+                        // Calculate where exactly screen-wise we hit
+                        // Reuse wallX logic
+                        let testWallX;
+                        if (side === 0) testWallX = posY + dist * rayDirY;
+                        else testWallX = posX + dist * rayDirX;
+                        testWallX -= Math.floor(testWallX);
+
+                        // Invert wallX if needed (standard logic)
+                        if (side === 0 && rayDirX > 0) testWallX = 1.0 - testWallX;
+                        if (side === 1 && rayDirY < 0) testWallX = 1.0 - testWallX;
+
+                        let door = this.map.getDoor(mapX, mapY);
+                        // If door is closed (offset 0), testWallX always hits (unless we want thin doors)
+                        // If door is sliding: usually it slides "into" the wall.
+                        // Let's assume it slides 'up' (texture wise) or 'sideways'.
+                        // Wolf3D sliding blocks:
+                        // If wallX > door.offset, it hits. Else it passes.
+
+                        if (door && testWallX < (1.0 - door.offset)) { // Hit the door part
+                            hit = type;
+                            // Store door specific info if needed, e.g. for renderer to offset texture
+                        } else {
+                            // Ray passed through the open part of the door
+                            hit = 0; // Continue ray
+                        }
+                    } else {
+                        hit = type;
+                    }
+                }
+            } else {
+                hit = -1; // Out of bounds
             }
         }
 
