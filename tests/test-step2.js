@@ -1,5 +1,5 @@
 function testStep2(T) {
-    T.assert(window.Input, 'Input module exists');
+    T.assert(typeof Input !== 'undefined', 'Input module exists');
 
     // Test key state
     Input.keys['KeyW'] = true;
