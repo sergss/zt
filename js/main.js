@@ -11,6 +11,7 @@ let fps = 0;
 
 function init() {
     console.log('Game Initialized');
+    Input.init();
     requestAnimationFrame(gameLoop);
 }
 
@@ -23,7 +24,20 @@ function draw() {
     ctx.fillStyle = '#000000';
     ctx.fillRect(0, 0, CONFIG.SCREEN_WIDTH, CONFIG.SCREEN_HEIGHT);
 
-    // Draw debugging info (optional for now)
+    // Draw debugging info
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '16px monospace';
+    const pressed = Input.getPressedKeys().join(', ');
+    ctx.fillText(`Pressed: ${pressed}`, 10, 50);
+
+    // Show active actions
+    let y = 70;
+    for (const action in Input.actions) {
+        if (Input.isActionActive(action)) {
+            ctx.fillText(`Action: ${action}`, 10, y);
+            y += 20;
+        }
+    }
 
 }
 
