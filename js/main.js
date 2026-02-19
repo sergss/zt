@@ -17,18 +17,15 @@ function init() {
     Input.init();
 
     map = new GameMap(testLevel);
-    // Basic player state for Step 3
-    player = {
-        x: 3.5, // Center of cell (3, 3)
-        y: 3.5,
-        angle: 0 // Facing East
-    };
+    player = new Player(1.5, 1.5, 0, map);
 
     requestAnimationFrame(gameLoop);
 }
 
 function update(dt) {
-    // Update game logic here
+    if (player) {
+        player.update(dt);
+    }
 }
 
 function draw() {
