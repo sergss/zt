@@ -78,4 +78,62 @@ class Renderer {
 
         return `rgb(${r},${g},${b})`;
     }
+
+    renderWeapon(player) {
+        // Draw weapon at bottom center
+        const centerX = this.x + this.width / 2;
+        const bottomY = this.y + this.height;
+
+        const weaponWidth = 120;
+        const weaponHeight = 120;
+
+        // Recoil offset
+        let recoilY = 0;
+        if (player.shootTimer > 0) {
+            recoilY = Math.sin(player.shootTimer * Math.PI * 5) * 20;
+        }
+
+        // Draw Weapon Shape (Pixel Art Placeholder)
+        this.ctx.fillStyle = '#444';
+
+        if (player.currentWeaponIndex === 0) { // Knife
+            this.ctx.fillStyle = '#888';
+            this.ctx.beginPath();
+            this.ctx.moveTo(centerX, bottomY);
+            this.ctx.lineTo(centerX + 30, bottomY - 80 + recoilY); // Tip
+            this.ctx.lineTo(centerX + 60, bottomY);
+            this.ctx.fill();
+        }
+        else if (player.currentWeaponIndex === 1) { // Pistol
+            this.ctx.fillStyle = '#333';
+            this.ctx.fillRect(centerX - 20, bottomY - 100 + recoilY, 40, 100);
+            this.ctx.fillStyle = '#111';
+            this.ctx.fillRect(centerX - 5, bottomY - 100 + recoilY, 10, 100); // Barrel
+        }
+        else if (player.currentWeaponIndex === 2) { // Shotgun
+            this.ctx.fillStyle = '#222';
+            this.ctx.fillRect(centerX - 40, bottomY - 80 + recoilY, 20, 80); // Left barrel
+            this.ctx.fillRect(centerX + 20, bottomY - 80 + recoilY, 20, 80); // Right barrel
+            this.ctx.fillStyle = '#533';
+            this.ctx.fillRect(centerX - 10, bottomY - 60 + recoilY, 20, 60); // Stock
+        }
+        else {
+            // Generic block for others
+            this.ctx.fillStyle = '#555';
+            this.ctx.fillRect(centerX - 30, bottomY - 90 + recoilY, 60, 90);
+        }
+
+        // Muzzle Flash
+        if (player.shootTimer > 0.1) {
+            const flashSize = 40 + Math.random() * 20;
+            this.ctx.fillStyle = `rgba(255, 255, 0, ${player.shootTimer * 5})`;
+            this.ctx.beginPath();
+            this.ctx.arc(centerX, bottomY - 100 + recoilY, flashSize, 0, Math.PI * 2);
+            this.ctx.fill();
+            this.ctx.fillStyle = `rgba(255, 255, 255, ${player.shootTimer * 5})`;
+            this.ctx.beginPath();
+            this.ctx.arc(centerX, bottomY - 100 + recoilY, flashSize * 0.6, 0, Math.PI * 2);
+            this.ctx.fill();
+        }
+    }
 }

@@ -71,7 +71,11 @@ class HUD {
         ctx.textAlign = 'center';
 
         // Ammo
-        let ammoCount = player.ammo[player.weapon.toLowerCase()] || 0;
+        let ammoCount = 0;
+        const currentWep = WEAPONS[player.currentWeaponIndex];
+        if (currentWep) {
+            ammoCount = player.ammo[currentWep.ammoType] || 0;
+        }
         ctx.fillText(`${ammoCount}`, centerX - 50, startY);
         ctx.font = '14px monospace';
         ctx.fillText(`AMMO`, centerX - 50, startY + 20);

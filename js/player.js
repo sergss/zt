@@ -11,16 +11,66 @@ class Player {
         // Stats
         this.hp = 100;
         this.armor = 0;
-        this.weapon = 'Pistol';
+
+        // Weapon System
+        // 7 weapons. All unlocked for testing.
+        // 0: Pistol, 1: Shotgun, 2: Assault Rifle, 3: MG, 4: Rocket, 5: Flame, 6: Laser
+        this.weapons = [true, true, true, true, true, true, true];
+        this.currentWeaponIndex = 0; // Pistol
+        this.weapon = WEAPONS[this.currentWeaponIndex].name;
+
         this.ammo = {
-            pistol: 50,
-            shotgun: 10,
-            rifle: 0
+            bullets: 200, // Pistol/Assault Rifle
+            shells: 50,   // Shotgun
+            belt: 200,    // MG
+            rockets: 20,  // Rocket
+            fuel: 100,    // Flamethrower
+            cells: 100    // Laser
         };
+
+        this.lastShotTime = 0;
+        this.shootTimer = 0; // Visual recoil/flash timer
+
         this.radius = 0.2;    // Collision radius
     }
 
+    switchWeapon(index) {
+        if (index >= 0 && index < WEAPONS.length) {
+            if (this.weapons[index]) {
+                this.currentWeaponIndex = index;
+                this.weapon = WEAPONS[index].name;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    shoot(time) {
+        const weaponProto = WEAPONS[this.currentWeaponIndex];
+
+        // Check Cooldown
+        if (time - this.lastShotTime < weaponProto.fireRate) return false;
+
+        // Check Ammo
+        const type = weaponProto.ammoType;
+        if (this.ammo[type] >= weaponProto.ammoPerShot) {
+            // FIRE!
+            if (type !== 'infinite') {
+                this.ammo[type] -= weaponProto.ammoPerShot;
+            }
+            this.lastShotTime = time;
+            this.shootTimer = 0.2; // Flash duration
+            return true;
+        }
+        return false;
+    }
+
     update(dt) {
+        if (this.shootTimer > 0) {
+            this.shootTimer -= dt;
+            if (this.shootTimer < 0) this.shootTimer = 0;
+        }
+
         // Rotation
         if (Input.isActionActive('turnLeft')) {
             this.angle -= this.rotSpeed * dt;
@@ -74,9 +124,5 @@ class Player {
         ) {
             this.y = targetY;
         }
-
-        // Simple blocking if both fail? The above separates X and Y sliding. 
-        // Note: The collision logic in tasks.md was "check cell before moving".
-        // Improved logic: checking corners of the player's bounding box (radius).
     }
 }
