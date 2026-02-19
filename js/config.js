@@ -1,0 +1,8 @@
+const CONFIG = {
+    SCREEN_WIDTH: 960,
+    SCREEN_HEIGHT: 600,
+    VIEWPORT_X: 160,
+    VIEWPORT_Y: 20,
+    VIEWPORT_W: 640,
+    VIEWPORT_H: 400
+};

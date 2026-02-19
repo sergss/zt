@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Zero Tolerance Tests</title>
+    <style>
+        body {
+            background: #222;
+            color: #fff;
+            font-family: monospace;
+        }
+
+        h2 {
+            border-bottom: 1px solid #555;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Test Runner</h1>
+    <div id="test-output">Running tests...</div>
+
+    <!-- Game Modules (Mocked or Real) -->
+    <canvas id="gameCanvas" width="960" height="600" style="display:none;"></canvas>
+    <script src="../js/config.js"></script>
+    <!-- Note: main.js starts the game loop automatically, which might be undesirable for tests. 
+         We might need to refactor main.js to only start if not testing, or just use what we need. 
+         For Step 1 testing, we just need config and checking the canvas. -->
+
+    <!-- Test Framework -->
+    <script src="test-framework.js"></script>
+
+    <!-- Tests -->
+    <script src="test-step1.js"></script>
+
+    <script>
+        // Run specific tests based on what's available
+        if (window.testStep1) testStep1(TestRunner);
+
+        TestRunner.run();
+    </script>
+</body>
+
+</html>
