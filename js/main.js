@@ -11,6 +11,8 @@ let fps = 0;
 
 let map;
 let player;
+let raycaster;
+let renderer;
 
 function init() {
     console.log('Game Initialized');
@@ -18,6 +20,10 @@ function init() {
 
     map = new GameMap(testLevel);
     player = new Player(1.5, 1.5, 0, map);
+
+    // Initialize Raycaster and Renderer for Step 5
+    raycaster = new Raycaster(map);
+    renderer = new Renderer(ctx, CONFIG);
 
     requestAnimationFrame(gameLoop);
 }
@@ -33,7 +39,14 @@ function draw() {
     ctx.fillStyle = '#000000';
     ctx.fillRect(0, 0, CONFIG.SCREEN_WIDTH, CONFIG.SCREEN_HEIGHT);
 
-    // Draw Map (2D debug view)
+    // Draw 3D View (Step 5)
+    if (renderer && player && map && raycaster) {
+        renderer.render3D(player, map, raycaster);
+    }
+
+    // Draw Map (2D debug view) - Keep it for now, maybe move it or toggle it?
+    // Tasks.md says "Keep 2D-minimap nearby (for debug)"
+    // Let's render it at 0,0 (top left)
     map.render2D(ctx, 0, 0);
 
     // Draw Player
