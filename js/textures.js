@@ -19,9 +19,9 @@ class TextureManager {
             'medkit', 'healthBig', 'healthSmall', 'armor', 'key',
             'ammo', 'ammoBullets', 'ammoShells', 'ammoBelt', 'ammoRockets', 'ammoFuel', 'ammoCells',
             'weaponShotgun', 'weaponAssaultRifle', 'weaponMachinegun', 'weaponRocketLauncher', 'weaponFlamethrower', 'weaponLaser',
-            'enemyGuard', 'enemyDead', // Keep legacy for tests if any
+            'guard', 'enemyDead', // Keep legacy for tests if any
             'zombie', 'soldier', 'alien',
-            'zombieAttack', 'soldierAttack', 'alienAttack'
+            'guardAttack', 'zombieAttack', 'soldierAttack', 'alienAttack'
         ];
         items.forEach(type => {
             this.textures[type] = this.generateTexture(type);
@@ -33,9 +33,9 @@ class TextureManager {
             'medkit', 'healthBig', 'healthSmall', 'armor', 'key', 'ammo',
             'ammoBullets', 'ammoShells', 'ammoBelt', 'ammoRockets', 'ammoFuel', 'ammoCells',
             'weaponShotgun', 'weaponAssaultRifle', 'weaponMachinegun', 'weaponRocketLauncher', 'weaponFlamethrower', 'weaponLaser',
-            'enemyGuard', 'enemyDead',
+            'guard', 'enemyDead',
             'zombie', 'soldier', 'alien',
-            'zombieAttack', 'soldierAttack', 'alienAttack'
+            'guardAttack', 'zombieAttack', 'soldierAttack', 'alienAttack'
         ].includes(type)) {
             return this.generateItemTexture(type);
         }
@@ -119,7 +119,19 @@ class TextureManager {
             ctx.fill();
         }
 
-        return canvas;
+        else if (type === 'elevator') {
+    // Type 8: Elevator (Silver doors with a seam)
+    ctx.fillStyle = '#888899';
+    ctx.fillRect(0, 0, this.size, this.size);
+    ctx.fillStyle = '#444455';
+    ctx.fillRect(30, 0, 4, 64); // Center seam
+    ctx.fillRect(0, 0, 64, 4);  // Top frame
+    ctx.fillStyle = '#222222';
+    ctx.fillRect(10, 20, 12, 24); // Left panel
+    ctx.fillRect(42, 20, 12, 24); // Right panel
+}
+
+return canvas;
     }
 
     generateItemTexture(type) {
@@ -294,24 +306,26 @@ class TextureManager {
             ctx.fillStyle = '#00ffff';
             ctx.fillRect(24, 24, 16, 20); // Energy
         }
-        else if (type === 'enemyGuard') {
-            // Humanoid shape
-            // Head
-            ctx.fillStyle = '#eec'; // Skin
-            ctx.fillRect(24, 4, 16, 16);
-            // Helmet/Hat
-            ctx.fillStyle = '#333';
-            ctx.fillRect(22, 2, 20, 6);
-            // Body (Uniform)
-            ctx.fillStyle = '#334466'; // Blue-ish uniform
-            ctx.fillRect(20, 20, 24, 24);
-            // Legs
-            ctx.fillStyle = '#223355';
-            ctx.fillRect(22, 44, 8, 20);
-            ctx.fillRect(34, 44, 8, 20);
-            // Gun
-            ctx.fillStyle = '#111';
-            ctx.fillRect(10, 30, 20, 6);
+        else if (type === 'guard' || type === 'guardAttack') {
+            // Bulletproof Guard Texture
+            ctx.fillStyle = '#222222'; ctx.fillRect(24, 2, 16, 12);
+            ctx.fillStyle = '#ffaa00'; ctx.fillRect(26, 10, 12, 4);
+            ctx.fillStyle = '#eeeecc'; ctx.fillRect(26, 14, 12, 6);
+            ctx.fillStyle = '#334466'; ctx.fillRect(22, 20, 20, 24);
+            ctx.fillStyle = '#111111'; ctx.fillRect(24, 22, 16, 14);
+            ctx.fillStyle = '#444444'; ctx.fillRect(26, 24, 4, 6); ctx.fillRect(34, 24, 4, 6);
+            ctx.fillStyle = '#334466'; ctx.fillRect(16, 22, 6, 12); ctx.fillRect(42, 22, 6, 12);
+            ctx.fillStyle = '#222222'; ctx.fillRect(22, 42, 20, 4);
+            ctx.fillStyle = '#dddddd'; ctx.fillRect(30, 42, 4, 4);
+            ctx.fillStyle = '#223355'; ctx.fillRect(24, 46, 7, 14); ctx.fillRect(33, 46, 7, 14);
+            ctx.fillStyle = '#111111'; ctx.fillRect(22, 58, 9, 6); ctx.fillRect(33, 58, 9, 6);
+            ctx.fillStyle = '#111111'; ctx.fillRect(12, 32, 24, 6); ctx.fillRect(24, 38, 4, 6);
+            ctx.fillStyle = '#444444'; ctx.fillRect(14, 30, 4, 2);
+
+            if (type === 'guardAttack') {
+                ctx.fillStyle = '#ffff00'; ctx.fillRect(8, 30, 6, 10);
+                ctx.fillStyle = '#ffffff'; ctx.fillRect(10, 32, 2, 6);
+            }
         }
         else if (type === 'enemyDead') {
             // Lying down

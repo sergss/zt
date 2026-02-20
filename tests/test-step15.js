@@ -42,5 +42,66 @@ function testStep15(T) {
         checkCollision(level.playerStart, 'Player Start');
         level.enemies.forEach((e, idx) => checkCollision(e, `Enemy ${idx} (${e.type})`));
         level.items.forEach((item, idx) => checkCollision(item, `Item ${idx} (${item.type})`));
+
+        // Проверка проходимости уровня (Flood Fill / BFS)
+        const isPassable = (cell) => cell === 0 || cell === 8 || cell === 9;
+        const startX = Math.floor(level.playerStart.x);
+        const startY = Math.floor(level.playerStart.y);
+
+        const visited = new Set();
+        const queue = [{ x: startX, y: startY }];
+        visited.add(`${startX},${startY}`);
+
+        while (queue.length > 0) {
+            const curr = queue.shift();
+
+            // Проверяем соседей (вверх, вниз, влево, вправо)
+            const neighbors = [
+                { x: curr.x + 1, y: curr.y },
+                { x: curr.x - 1, y: curr.y },
+                { x: curr.x, y: curr.y + 1 },
+                { x: curr.x, y: curr.y - 1 }
+            ];
+
+            for (const n of neighbors) {
+                if (n.y >= 0 && n.y < level.map.length && n.x >= 0 && n.x < level.map[0].length) {
+                    const cell = level.map[n.y][n.x];
+                    if (isPassable(cell) && !visited.has(`${n.x},${n.y}`)) {
+                        visited.add(`${n.x},${n.y}`);
+                        queue.push({ x: n.x, y: n.y });
+                    }
+                }
+            }
+        }
+
+        // 1. Проверяем, что достижим лифт (блок 8)
+        let elevatorFound = false;
+        let elevatorReachable = false;
+        for (let y = 0; y < level.map.length; y++) {
+            for (let x = 0; x < level.map[0].length; x++) {
+                if (level.map[y][x] === 8) {
+                    elevatorFound = true;
+                    if (visited.has(`${x},${y}`)) {
+                        elevatorReachable = true;
+                    }
+                }
+            }
+        }
+        T.assert(elevatorFound, `Level ${i} MUST have an elevator (block 8)`);
+        T.assert(elevatorReachable, `Level ${i} Elevator must be reachable from player start`);
+
+        // 2. Проверяем, что достижимы все враги
+        level.enemies.forEach((e, idx) => {
+            const ex = Math.floor(e.x);
+            const ey = Math.floor(e.y);
+            T.assert(visited.has(`${ex},${ey}`), `Level ${i} Enemy ${idx} at (${ex}, ${ey}) must be reachable`);
+        });
+
+        // 3. Проверяем, что достижимы все предметы
+        level.items.forEach((item, idx) => {
+            const ix = Math.floor(item.x);
+            const iy = Math.floor(item.y);
+            T.assert(visited.has(`${ix},${iy}`), `Level ${i} Item ${idx} at (${ix}, ${iy}) must be reachable`);
+        });
     });
 }

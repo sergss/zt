@@ -158,9 +158,14 @@ function update(dt) {
             levelManager.setEnemiesLeft(enemiesLeft);
 
             // Check Elevator Interaction (Type 8)
-            const mapCellX = Math.floor(player.x);
-            const mapCellY = Math.floor(player.y);
-            if (map.grid[mapCellY][mapCellX] === 8 && levelManager.isElevatorActive()) {
+            let nearElevator = false;
+            const checkDist = 0.6; // player radius is 0.2, so 0.6 checks surrounding tiles
+            if (map.grid[Math.floor(player.y)] && map.grid[Math.floor(player.y)][Math.floor(player.x + checkDist)] === 8) nearElevator = true;
+            if (map.grid[Math.floor(player.y)] && map.grid[Math.floor(player.y)][Math.floor(player.x - checkDist)] === 8) nearElevator = true;
+            if (map.grid[Math.floor(player.y + checkDist)] && map.grid[Math.floor(player.y + checkDist)][Math.floor(player.x)] === 8) nearElevator = true;
+            if (map.grid[Math.floor(player.y - checkDist)] && map.grid[Math.floor(player.y - checkDist)][Math.floor(player.x)] === 8) nearElevator = true;
+
+            if (nearElevator && levelManager.isElevatorActive()) {
                 gameState = 'LEVEL_COMPLETE';
                 levelTimer = 3.0; // 3 seconds before next level
                 return;
@@ -375,7 +380,7 @@ function draw() {
     if (gameState === 'PLAYING') {
         // Draw 3D View (Step 5)
         if (renderer && player && map && raycaster && textureManager) {
-            renderer.render3D(player, map, raycaster, textureManager);
+            renderer.render3D(player, map, raycaster, textureManager, levelManager.isElevatorActive());
 
             // Step 10 & 11: Render Sprites and Enemies
             // We combine them for correct Z-sorting

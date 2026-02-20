@@ -65,7 +65,7 @@ class Renderer {
                 // Elevator Active Flickering
                 if (result.hit === 8 && isElevatorActive) {
                     let time = Date.now() / 200;
-                    let alpha = 0.2 + (Math.sin(time) * 0.2); // oscillates between 0.0 and 0.4
+                    let alpha = 0.5 + (Math.sin(time) * 0.4); // oscillates between 0.1 and 0.9
                     this.ctx.fillStyle = `rgba(0, 255, 0, ${alpha})`;
                     let drawY = (this.height - lineHeight) / 2;
                     this.ctx.fillRect(this.x + x, this.y + drawY, 1, lineHeight);
