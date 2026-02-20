@@ -84,6 +84,45 @@ function update(dt) {
             // 1. Try to shoot weapon
             if (player.shoot(Date.now() / 1000)) {
                 // Shot fired successfully
+                const weaponProto = WEAPONS[player.currentWeaponIndex];
+
+                for (let s = 0; s < (weaponProto.count || 1); s++) {
+                    let shootAngle = player.angle + (Math.random() - 0.5) * weaponProto.spread;
+                    let rayHit = raycaster.castRay(player.x, player.y, shootAngle);
+                    let wallDist = rayHit ? rayHit.distance : weaponProto.range;
+
+                    let closestEnemy = null;
+                    let closestDist = Math.min(weaponProto.range, wallDist);
+
+                    enemies.forEach(enemy => {
+                        if (enemy.hp <= 0) return;
+
+                        const dx = enemy.x - player.x;
+                        const dy = enemy.y - player.y;
+                        const dist = Math.hypot(dx, dy);
+
+                        if (dist < closestDist) {
+                            let angleToEnemy = Math.atan2(dy, dx);
+                            let diff = angleToEnemy - shootAngle;
+
+                            while (diff > Math.PI) diff -= Math.PI * 2;
+                            while (diff < -Math.PI) diff += Math.PI * 2;
+
+                            // The enemy is approx 0.8 units wide. angular width ~= 0.4 / dist. 
+                            let hitAngle = 0.4 / Math.max(0.5, dist);
+
+                            if (Math.abs(diff) < hitAngle) {
+                                closestEnemy = enemy;
+                                closestDist = dist;
+                            }
+                        }
+                    });
+
+                    if (closestEnemy) {
+                        closestEnemy.takeDamage(weaponProto.damage);
+                    }
+                }
+
                 const dist = 1.0;
                 const targetX = Math.floor(player.x + Math.cos(player.angle) * dist);
                 const targetY = Math.floor(player.y + Math.sin(player.angle) * dist);
@@ -92,7 +131,7 @@ function update(dt) {
                     map.tryOpenDoor(targetX, targetY);
                 }
             } else {
-                // If didn't fire (cooldown or no ammo), still try to open door?
+                // If didn't fire (cooldown or no ammo), still try to open door
                 const dist = 1.0;
                 const targetX = Math.floor(player.x + Math.cos(player.angle) * dist);
                 const targetY = Math.floor(player.y + Math.sin(player.angle) * dist);
