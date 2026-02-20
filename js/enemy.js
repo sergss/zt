@@ -26,13 +26,62 @@ class Enemy extends Sprite {
             this.state = 'DEAD';
             this.sprite = 'enemyDead'; // Switch to dead texture
             this.textureId = this.sprite;
-            // Removed from active logic, but keep in sprite list for rendering corpse?
-            // Optional for now.
             return;
         }
 
-        // For Step 11, enemies just stand "IDLE".
-        // State is explicitly set to IDLE in constructor.
+        if (this.state === 'DEAD') return;
+
+        // Step 13: Enemy AI
+        if (this.state === 'IDLE') {
+            if (this.checkLineOfSight(player, map)) {
+                this.state = 'CHASE';
+            }
+        }
+
+        if (this.state === 'CHASE') {
+            let dx = player.x - this.x;
+            let dy = player.y - this.y;
+            let dist = Math.hypot(dx, dy);
+
+            if (dist > 0.5) { // Move closer if not in melee range
+                let moveX = (dx / dist) * this.speed * dt;
+                let moveY = (dy / dist) * this.speed * dt;
+
+                // Move with basic wall collision
+                if (!map.isWall(Math.floor(this.x + moveX), Math.floor(this.y))) {
+                    this.x += moveX;
+                }
+                if (!map.isWall(Math.floor(this.x), Math.floor(this.y + moveY))) {
+                    this.y += moveY;
+                }
+            }
+        }
+    }
+
+    checkLineOfSight(player, map) {
+        if (!map) return false;
+        let dx = player.x - this.x;
+        let dy = player.y - this.y;
+        let dist = Math.hypot(dx, dy);
+
+        if (dist === 0) return true;
+
+        // Raycast step approach
+        let steps = Math.ceil(dist * 2);
+        let stepX = dx / steps;
+        let stepY = dy / steps;
+
+        let cx = this.x;
+        let cy = this.y;
+
+        for (let i = 0; i < steps; i++) {
+            cx += stepX;
+            cy += stepY;
+            if (map.isWall(Math.floor(cx), Math.floor(cy))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     takeDamage(amount) {
