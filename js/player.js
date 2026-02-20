@@ -9,8 +9,8 @@ class Player {
         this.rotSpeed = 3.0;  // Radians per second
 
         // Stats
-        this.hp = 55;
-        this.armor = 0;
+        this.hp = 50;
+        this.armor = 25; // Some armor to test hits, but not full so pickups work
 
         // Weapon System
         // 7 weapons. All unlocked for testing.
@@ -20,14 +20,15 @@ class Player {
         this.weapon = WEAPONS[this.currentWeaponIndex].name;
 
         this.ammo = {
-            bullets: 20,  // Pistol/Assault Rifle
-            shells: 0,    // Shotgun
-            belt: 0,      // MG
-            rockets: 0,   // Rocket
-            fuel: 0,      // Flamethrower
-            cells: 0,     // Laser
+            bullets: 40,   // Pistol/Assault Rifle
+            shells: 20,    // Shotgun
+            belt: 50,      // MG
+            rockets: 5,    // Rocket
+            fuel: 50,      // Flamethrower
+            cells: 20,     // Laser
             infinite: 999
         };
+
 
         this.lastShotTime = 0;
         this.shootTimer = 0; // Visual recoil/flash timer

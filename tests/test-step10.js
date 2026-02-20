@@ -7,10 +7,10 @@ function testStep10(T) {
 
     // Reset Stats
     p.hp = 50;
-    p.armor = 0;
-    p.weapons = [true, false, false, false, false, false, false]; // Only pistol
+    p.armor = 25;
+    p.weapons = [true, true, true, true, true, true, true]; // All weapons
     p.ammo = {
-        bullets: 0, shells: 0, belt: 0, rockets: 0, fuel: 0, cells: 0, infinite: 999
+        bullets: 40, shells: 20, belt: 50, rockets: 5, fuel: 50, cells: 20, infinite: 999
     };
 
     // 1. Health Pickup
@@ -28,27 +28,27 @@ function testStep10(T) {
     const sArmor = new Sprite(1.6, 1.6, 'armor');
     sArmor.updateDistance(p);
     sArmor.checkPickup(p);
-    T.assertEqual(p.armor, 25, 'Armor increased by 25');
+    T.assertEqual(p.armor, 50, 'Armor increased by 25 (25+25)');
 
     // 3. Weapon Pickup (Shotgun)
     const sShotgun = new Sprite(1.6, 1.6, 'weaponShotgun');
     sShotgun.updateDistance(p);
     sShotgun.checkPickup(p);
     T.assert(p.weapons[1], 'Shotgun unlocked');
-    T.assertEqual(p.ammo.shells, 8, 'Shotgun ammo +8');
+    T.assertEqual(p.ammo.shells, 28, 'Shotgun ammo +8 (20+8)');
 
     // 4. New Weapons
     const sRifle = new Sprite(1.6, 1.6, 'weaponAssaultRifle');
     sRifle.updateDistance(p);
     sRifle.checkPickup(p);
     T.assert(p.weapons[2], 'Assault Rifle unlocked');
-    T.assertEqual(p.ammo.bullets, 20, 'Bullets +20'); // 0 + 20
+    T.assertEqual(p.ammo.bullets, 60, 'Bullets +20 (40+20)');
 
     const sRocket = new Sprite(1.6, 1.6, 'weaponRocketLauncher');
     sRocket.updateDistance(p);
     sRocket.checkPickup(p);
     T.assert(p.weapons[4], 'Rocket Launcher unlocked');
-    T.assertEqual(p.ammo.rockets, 5, 'Rockets +5');
+    T.assertEqual(p.ammo.rockets, 10, 'Rockets +5 (5+5)');
 
     // 5. Texture Gen
     const tm = new TextureManager();
