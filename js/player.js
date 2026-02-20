@@ -32,8 +32,23 @@ class Player {
 
         this.lastShotTime = 0;
         this.shootTimer = 0; // Visual recoil/flash timer
+        this.damageFlash = 0; // Red screen flash
 
         this.radius = 0.2;    // Collision radius
+    }
+
+    takeDamage(amount) {
+        // Simple armor mitigation (absorb up to 50% of damage or remaining armor)
+        let absorb = Math.min(Math.floor(amount / 2), this.armor);
+        this.armor -= absorb;
+        this.hp -= (amount - absorb);
+
+        if (this.hp <= 0) {
+            this.hp = 0;
+            console.log("Player died!");
+        }
+
+        this.damageFlash = 0.3; // 0.3 seconds of red flash
     }
 
     switchWeapon(index) {
@@ -71,6 +86,11 @@ class Player {
         if (this.shootTimer > 0) {
             this.shootTimer -= dt;
             if (this.shootTimer < 0) this.shootTimer = 0;
+        }
+
+        if (this.damageFlash > 0) {
+            this.damageFlash -= dt;
+            if (this.damageFlash < 0) this.damageFlash = 0;
         }
 
         // Rotation

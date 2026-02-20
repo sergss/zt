@@ -188,6 +188,13 @@ function draw() {
         hud.render(ctx, player, enemiesLeft);
     }
 
+    // Draw Damage Flash (Step 13)
+    if (player && player.damageFlash > 0) {
+        // Start fading from alpha 0.6 downwards
+        ctx.fillStyle = `rgba(255, 0, 0, ${player.damageFlash * 2})`;
+        ctx.fillRect(0, 0, CONFIG.SCREEN_WIDTH, CONFIG.SCREEN_HEIGHT);
+    }
+
     // Draw Map (2D debug view)
     // Draw AFTER HUD so it is not covered by the frame
     map.render2D(ctx, 0, 0);

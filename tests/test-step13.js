@@ -22,4 +22,20 @@ function testStep13(T) {
     }
     const newDist = Math.hypot(enemy.x - player.x, enemy.y - player.y);
     T.assert(newDist < oldDist, 'Enemy moves closer to player');
+
+    // Test Attack State (Zombie melee range is 1.0)
+    enemy.x = 2.5;
+    enemy.y = 1.5; // Dist = 1.0
+
+    let damageTaken = false;
+    player.takeDamage = function (dmg) { damageTaken = true; }; // Mock damage
+
+    enemy.update(0.016, player, map);
+    T.assertEqual(enemy.state, 'ATTACK', 'Enemy enters ATTACK state in range');
+    T.assert(damageTaken, 'Enemy deals damage on attack');
+
+    // Test Pain State
+    enemy.takeDamage(10);
+    T.assertEqual(enemy.state, 'PAIN', 'Enemy enters PAIN state on hit');
+    T.assert(enemy.painTimer > 0, 'Pain timer > 0');
 }
