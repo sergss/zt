@@ -244,9 +244,18 @@ function draw() {
             // Highlight selected
             if (index === roster.selectedIndex) {
                 ctx.fillStyle = '#333';
-                ctx.fillRect(CONFIG.SCREEN_WIDTH / 2 - 300, y - 40, 600, 70);
+                ctx.fillRect(CONFIG.SCREEN_WIDTH / 2 - 350, y - 45, 700, 80);
                 ctx.strokeStyle = '#fff';
-                ctx.strokeRect(CONFIG.SCREEN_WIDTH / 2 - 300, y - 40, 600, 70);
+                ctx.strokeRect(CONFIG.SCREEN_WIDTH / 2 - 350, y - 45, 700, 80);
+            }
+
+            // Draw Portrait
+            if (hud && hud.drawFace) {
+                // Pass a mock 'player' object with the character's stats
+                // The highlight box is y-45 to y+35 (80px tall).
+                // Let's draw the face at size 68 (width 68, height 68 * 1.1 = 74.8).
+                // y - 42 puts it right at the top of the highlight box + 3px padding.
+                hud.drawFace(ctx, char, CONFIG.SCREEN_WIDTH / 2 - 340, y - 42, 68);
             }
 
             // Grey out dead characters
@@ -255,12 +264,14 @@ function draw() {
             // Name
             ctx.textAlign = 'left';
             ctx.font = '24px monospace';
-            ctx.fillText(char.name + (char.alive ? "" : " (DECEASED)"), CONFIG.SCREEN_WIDTH / 2 - 280, y);
+            ctx.textBaseline = 'top';
+            ctx.fillText(char.name + (char.alive ? "" : " (DECEASED)"), CONFIG.SCREEN_WIDTH / 2 - 250, y - 35);
 
             // Stats
             ctx.font = '16px monospace';
             ctx.fillStyle = char.alive ? '#aaa' : '#444';
-            ctx.fillText(`HP: ${char.hp} | Armor: ${char.armor} | Speed: ${char.speed}`, CONFIG.SCREEN_WIDTH / 2 - 280, y + 20);
+            ctx.fillText(`HP: ${char.hp} | Armor: ${char.armor} | Speed: ${char.speed}`, CONFIG.SCREEN_WIDTH / 2 - 250, y - 5);
+            ctx.textBaseline = 'alphabetic'; // reset
         });
 
         // Instructions
@@ -324,13 +335,30 @@ function draw() {
             ctx.fillRect(0, 0, CONFIG.SCREEN_WIDTH, CONFIG.SCREEN_HEIGHT);
         }
 
-        // Draw Map (2D debug view)
+        // Draw Map (2D debug view) inside HUD
         // Draw AFTER HUD so it is not covered by the frame
-        map.render2D(ctx, 0, 0);
+        // consoleY = VIEWPORT_Y (80) + VIEWPORT_H (340) = 420
+        // mapY = 420 + 10 = 430. mapX = 300
+        const mapOffsetX = 300;
+        const mapOffsetY = 430;
+
+        ctx.save();
+        // Clip map to its dedicated HUD window
+        ctx.beginPath();
+        ctx.rect(300, 430, 300, 160);
+        ctx.clip();
+
+        // Let's scroll the map so the player is mostly centered in the UI box
+        const playerScreenX = player.x * map.cellSize;
+        const playerScreenY = player.y * map.cellSize;
+        const scrollX = mapOffsetX + 150 - playerScreenX;
+        const scrollY = mapOffsetY + 80 - playerScreenY;
+
+        map.render2D(ctx, scrollX, scrollY);
 
         // Draw Player on Map
-        const pX = player.x * map.cellSize;
-        const pY = player.y * map.cellSize;
+        const pX = scrollX + playerScreenX;
+        const pY = scrollY + playerScreenY;
 
         ctx.fillStyle = '#ff0000';
         ctx.beginPath();
@@ -343,6 +371,8 @@ function draw() {
         ctx.moveTo(pX, pY);
         ctx.lineTo(pX + Math.cos(player.angle) * 10, pY + Math.sin(player.angle) * 10);
         ctx.stroke();
+
+        ctx.restore();
     }
 }
 
