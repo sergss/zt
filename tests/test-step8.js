@@ -2,12 +2,15 @@ function testStep8(T) {
     const hud = new HUD(CONFIG);
     T.assert(typeof hud === 'object', 'HUD created');
 
-    // Create mock player
+    // Create mock player with new Character System properties
     const player = {
+        name: 'John "Gore" Miller',
         hp: 100,
+        maxHp: 100,
         armor: 50,
         weapon: 'Pistol',
-        ammo: { pistol: 20 },
+        currentWeaponIndex: 0,
+        ammo: { bullets: 20 },
         angle: 0
     };
 
@@ -19,10 +22,10 @@ function testStep8(T) {
 
     // Render shouldn't throw error
     try {
-        hud.render(ctx, player, 5); // 5 enemies left
+        hud.render(ctx, player, 5, { cellSize: 64, render2D: () => { } }); // Pass mock map
         T.assert(true, 'HUD render executed without error');
     } catch (e) {
-        T.assert(false, 'HUD render failed: ' + e.message);
+        T.assert(false, 'HUD render failed: ' + e.message + '\\n' + e.stack);
     }
 
     // Check pixel presence?
