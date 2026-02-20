@@ -428,62 +428,191 @@ class TextureManager {
             ctx.fillRect(8, 32, 4, 2); // Muzzle flash guard 
         }
         else if (type === 'alien') {
-            // Alien: Purple, insectoid limbs, scaly body, large glowing eyes
+            // Front-facing highly detailed Xenomorph with red eyes
 
-            // Tapered scaly body
-            ctx.fillStyle = '#5500aa';
-            ctx.beginPath();
-            ctx.moveTo(32, 20); ctx.lineTo(44, 30);
-            ctx.lineTo(38, 48); ctx.lineTo(26, 48);
-            ctx.lineTo(20, 30); ctx.fill();
+            const cx = 32;
 
-            // Ribbed Scales
-            ctx.strokeStyle = '#330066';
-            ctx.lineWidth = 2;
-            ctx.beginPath(); ctx.moveTo(24, 30); ctx.lineTo(40, 30); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(26, 36); ctx.lineTo(38, 36); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(28, 42); ctx.lineTo(36, 42); ctx.stroke();
-
-            // Head (Xenomorph/Mantis shaped)
-            ctx.fillStyle = '#440088';
-            ctx.beginPath();
-            ctx.moveTo(32, 2); ctx.lineTo(42, 10);
-            ctx.lineTo(38, 22); ctx.lineTo(26, 22);
-            ctx.lineTo(22, 10); ctx.fill();
-
-            // Glowing Slanted Eyes
-            ctx.fillStyle = '#00ffcc';
-            ctx.beginPath();
-            ctx.ellipse(27, 14, 4, 8, -Math.PI / 4, 0, Math.PI * 2); ctx.fill();
-            ctx.beginPath();
-            ctx.ellipse(37, 14, 4, 8, Math.PI / 4, 0, Math.PI * 2); ctx.fill();
-            // Slit Pupils
-            ctx.fillStyle = '#000000';
-            ctx.beginPath();
-            ctx.ellipse(27, 14, 1, 6, -Math.PI / 4, 0, Math.PI * 2); ctx.fill();
-            ctx.beginPath();
-            ctx.ellipse(37, 14, 1, 6, Math.PI / 4, 0, Math.PI * 2); ctx.fill();
-
-            // Reverse-jointed Legs
-            ctx.strokeStyle = '#5500aa';
+            // Tail (looping behind right leg to the front)
+            ctx.strokeStyle = '#111';
             ctx.lineWidth = 4;
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
-            // Left (rear from view)
-            ctx.beginPath(); ctx.moveTo(26, 46); ctx.lineTo(16, 54); ctx.lineTo(20, 64); ctx.stroke();
-            // Right (front from view)
-            ctx.beginPath(); ctx.moveTo(38, 46); ctx.lineTo(48, 54); ctx.lineTo(44, 64); ctx.stroke();
+            ctx.beginPath();
+            // Start behind back
+            ctx.moveTo(cx, 36);
+            ctx.bezierCurveTo(cx+24, 20, cx+30, 50, cx+16, 56);
+            ctx.bezierCurveTo(cx+10, 60, cx-20, 55, cx-24, 45);
+            ctx.stroke();
+            // Ribs on tail
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(cx+21,34); ctx.lineTo(cx+23,36); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx+23,40); ctx.lineTo(cx+25,42); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx+20,48); ctx.lineTo(cx+22,46); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx+16,52); ctx.lineTo(cx+18,50); ctx.stroke();
+            // Tail barb
+            ctx.fillStyle = '#444';
+            ctx.beginPath(); ctx.moveTo(cx-24,45); ctx.lineTo(cx-30,40); ctx.lineTo(cx-22,38); ctx.fill();
 
-            // Insectoid Arms/Claws
-            // Left arm dangling
-            ctx.beginPath(); ctx.moveTo(22, 26); ctx.lineTo(10, 36); ctx.lineTo(14, 46); ctx.stroke();
-            // Right arm raised
-            ctx.beginPath(); ctx.moveTo(42, 26); ctx.lineTo(54, 18); ctx.lineTo(60, 26); ctx.stroke();
+            // Dorsal pipes (curving from back over shoulders)
+            ctx.strokeStyle = '#1a1a1a';
+            ctx.lineWidth = 3;
+            // Left pipe
+            ctx.beginPath(); ctx.moveTo(cx-8, 26); ctx.quadraticCurveTo(cx-14, 10, cx-6, 12); ctx.stroke();
+            // Right pipe
+            ctx.beginPath(); ctx.moveTo(cx+8, 26); ctx.quadraticCurveTo(cx+14, 10, cx+6, 12); ctx.stroke();
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(cx-12, 16); ctx.lineTo(cx-10, 15); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx+12, 16); ctx.lineTo(cx+10, 15); ctx.stroke();
 
-            // Sharp Claws (pinkish/purple)
-            ctx.fillStyle = '#ff00ff';
-            ctx.beginPath(); ctx.moveTo(14, 46); ctx.lineTo(10, 52); ctx.lineTo(18, 52); ctx.fill();
-            ctx.beginPath(); ctx.moveTo(60, 26); ctx.lineTo(64, 18); ctx.lineTo(54, 20); ctx.fill();
+            // Legs (Bent, plantigrade/digitigrade mix)
+            ctx.fillStyle = '#0a0a0a';
+            ctx.strokeStyle = '#1a1a1a';
+            ctx.lineWidth = 4;
+            // Left leg
+            ctx.beginPath(); ctx.moveTo(cx-6, 38); ctx.lineTo(cx-16, 46); ctx.lineTo(cx-10, 56); ctx.stroke();
+            ctx.beginPath(); ctx.arc(cx-16, 46, 2, 0, Math.PI*2); ctx.fill(); // Knee
+            // Left Foot
+            ctx.beginPath(); ctx.moveTo(cx-10, 56); ctx.lineTo(cx-16, 62); ctx.lineTo(cx-12, 62); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(cx-10, 56); ctx.lineTo(cx-6, 60); ctx.lineTo(cx-4, 58); ctx.fill();
+            // Right leg
+            ctx.beginPath(); ctx.moveTo(cx+6, 38); ctx.lineTo(cx+16, 46); ctx.lineTo(cx+10, 56); ctx.stroke();
+            ctx.beginPath(); ctx.arc(cx+16, 46, 2, 0, Math.PI*2); ctx.fill(); // Knee
+            // Right Foot
+            ctx.beginPath(); ctx.moveTo(cx+10, 56); ctx.lineTo(cx+16, 62); ctx.lineTo(cx+12, 62); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(cx+10, 56); ctx.lineTo(cx+6, 60); ctx.lineTo(cx+4, 58); ctx.fill();
+
+            // Leg muscle highlights
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(cx-10, 42); ctx.lineTo(cx-14, 46); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx+10, 42); ctx.lineTo(cx+14, 46); ctx.stroke();
+
+            // Arms (Spindly, reaching outward and down)
+            ctx.strokeStyle = '#111';
+            ctx.lineWidth = 3;
+            // Left arm
+            ctx.beginPath(); ctx.moveTo(cx-10, 24); ctx.lineTo(cx-20, 30); ctx.lineTo(cx-26, 44); ctx.stroke();
+            // Right arm
+            ctx.beginPath(); ctx.moveTo(cx+10, 24); ctx.lineTo(cx+20, 30); ctx.lineTo(cx+26, 44); ctx.stroke();
+            
+            // Shoulders
+            ctx.fillStyle = '#1e1e1e';
+            ctx.beginPath(); ctx.arc(cx-10, 24, 3, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(cx+10, 24, 3, 0, Math.PI*2); ctx.fill();
+
+            // Claws (Large, sharp fingers pointing forward/down)
+            ctx.strokeStyle = '#444';
+            ctx.lineWidth = 1.5;
+            // Left hand
+            ctx.beginPath(); ctx.moveTo(cx-26, 44); ctx.lineTo(cx-24, 52); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx-26, 44); ctx.lineTo(cx-28, 50); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx-26, 44); ctx.lineTo(cx-30, 48); ctx.stroke();
+            // Right hand
+            ctx.beginPath(); ctx.moveTo(cx+26, 44); ctx.lineTo(cx+24, 52); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx+26, 44); ctx.lineTo(cx+28, 50); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx+26, 44); ctx.lineTo(cx+30, 48); ctx.stroke();
+            
+            // Torso (Biomechanical ribs, narrow waist)
+            ctx.fillStyle = '#0a0a0a';
+            ctx.beginPath();
+            ctx.moveTo(cx, 20); // Base of neck
+            ctx.lineTo(cx+9, 24); // Right pec
+            ctx.lineTo(cx+6, 32); // Lower rib
+            ctx.lineTo(cx+3, 38); // Hip
+            ctx.lineTo(cx-3, 38); // Left hip
+            ctx.lineTo(cx-6, 32); // Left lower rib
+            ctx.lineTo(cx-9, 24); // Left pec
+            ctx.fill();
+
+            // Ribs (Curving horizontal grey lines)
+            ctx.strokeStyle = '#444';
+            ctx.lineWidth = 1;
+            // Chest plate
+            ctx.beginPath(); ctx.moveTo(cx-6, 26); ctx.quadraticCurveTo(cx, 28, cx+6, 26); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx-5, 29); ctx.quadraticCurveTo(cx, 31, cx+5, 29); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx-4, 32); ctx.quadraticCurveTo(cx, 34, cx+4, 32); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx-3, 35); ctx.quadraticCurveTo(cx, 36, cx+3, 35); ctx.stroke();
+            // Center sternum line
+            ctx.beginPath(); ctx.moveTo(cx, 24); ctx.lineTo(cx, 38); ctx.stroke();
+
+            // Head (Central dome facing forward and curving back, jaws open, red eyes)
+            // Dome background (back part of the head rising up)
+            ctx.fillStyle = '#080808';
+            ctx.beginPath();
+            ctx.moveTo(cx-8, 16);
+            ctx.bezierCurveTo(cx-8, 4, cx-4, 0, cx, 0); // Left curve to top
+            ctx.bezierCurveTo(cx+4, 0, cx+8, 4, cx+8, 16); // Right curve to base
+            ctx.fill();
+            
+            // Ribbed details on the dome (forehead ridges)
+            ctx.strokeStyle = '#222';
+            ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(cx-4, 4); ctx.lineTo(cx+4, 4); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx-5, 7); ctx.lineTo(cx+5, 7); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx-6, 10); ctx.lineTo(cx+6, 10); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, 16); ctx.stroke(); // Center ridge
+            
+            // Gloss highlight on dome
+            ctx.strokeStyle = '#555';
+            ctx.beginPath(); ctx.moveTo(cx-5, 2); ctx.quadraticCurveTo(cx-2, 6, cx-6, 12); ctx.stroke();
+
+            // Cheeks/jaw structure
+            ctx.fillStyle = '#111';
+            ctx.beginPath();
+            ctx.moveTo(cx-8, 14);
+            ctx.lineTo(cx-6, 22); // Left jaw
+            ctx.lineTo(cx-4, 25); // Left chin
+            ctx.lineTo(cx, 24);   // Center mouth open
+            ctx.lineTo(cx+4, 25); // Right chin
+            ctx.lineTo(cx+6, 22); // Right jaw
+            ctx.lineTo(cx+8, 14); // Back to side
+            ctx.fill();
+
+            // Red glowing eyes (Reference specifies red eyes)
+            // They are angled, menacing slits
+            ctx.shadowColor = '#ff0000';
+            ctx.shadowBlur = 4;
+            ctx.fillStyle = '#ff0000';
+            // Left eye
+            ctx.beginPath(); ctx.moveTo(cx-7, 16); ctx.lineTo(cx-2, 18); ctx.lineTo(cx-4, 15); ctx.fill();
+            // Right eye
+            ctx.beginPath(); ctx.moveTo(cx+7, 16); ctx.lineTo(cx+2, 18); ctx.lineTo(cx+4, 15); ctx.fill();
+            // Reset shadow
+            ctx.shadowBlur = 0;
+
+            // Bright core of the eye
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath(); ctx.arc(cx-4, 16.5, 0.5, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(cx+4, 16.5, 0.5, 0, Math.PI*2); ctx.fill();
+
+            // Mouth (Open, showing inner jaw and teeth)
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.moveTo(cx-4, 19); ctx.lineTo(cx, 17); ctx.lineTo(cx+4, 19); // Upper lip
+            ctx.lineTo(cx+3, 23); ctx.lineTo(cx, 25); ctx.lineTo(cx-3, 23); // Lower lip
+            ctx.fill();
+            
+            // Teeth (silver, highly detailed)
+            ctx.fillStyle = '#ccc';
+            // Upper
+            ctx.fillRect(cx-3, 19, 1, 2); ctx.fillRect(cx-1, 18, 1, 2); 
+            ctx.fillRect(cx+1, 18, 1, 2); ctx.fillRect(cx+3, 19, 1, 2);
+            // Lower
+            ctx.fillRect(cx-2, 22, 1, 2); ctx.fillRect(cx, 23, 1, 2); ctx.fillRect(cx+2, 22, 1, 2);
+
+            // Inner jaw extended slightly
+            ctx.fillStyle = '#888';
+            ctx.fillRect(cx-1, 20, 2, 2);
+
+            // Slime drips (translucent)
+            ctx.fillStyle = 'rgba(200, 255, 200, 0.5)';
+            ctx.fillRect(cx-4, 25, 1, 4); // From chin
+            ctx.fillRect(cx+2, 24, 1, 6); // From chin
+            ctx.fillRect(cx-24, 45, 1, 5); // From left claw
+            ctx.fillRect(cx+24, 46, 1, 4); // From right claw
+            ctx.fillRect(cx-14, 47, 1, 3); // From knee
         } // End of generateItemTexture
 
         return canvas;
