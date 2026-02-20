@@ -34,6 +34,8 @@ function testStep13(T) {
     enemy.update(0.016, player, map);
     T.assertEqual(enemy.state, 'ATTACK', 'Enemy enters ATTACK state in range');
     T.assert(damageTaken, 'Enemy deals damage on attack');
+    T.assertEqual(enemy.sprite, 'zombieAttack', 'Enemy switches to attack texture');
+    T.assertEqual(enemy.textureId, 'zombieAttack', 'Texture ID reflects attack animation');
 
     // Test Pain State
     enemy.takeDamage(10);

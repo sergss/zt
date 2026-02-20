@@ -87,6 +87,14 @@ class Enemy extends Sprite {
                 }
             }
         }
+
+        // Animation state (Attack flash for 0.3s)
+        if (this.state === 'ATTACK' && this.attackTimer > 0.7) {
+            this.sprite = this.type + 'Attack';
+        } else {
+            this.sprite = this.type;
+        }
+        this.textureId = this.sprite;
     }
 
     checkLineOfSight(player, map) {

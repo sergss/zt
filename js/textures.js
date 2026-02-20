@@ -19,7 +19,8 @@ class TextureManager {
             'ammo', 'ammoBullets', 'ammoShells', 'ammoBelt', 'ammoRockets', 'ammoFuel', 'ammoCells',
             'weaponShotgun', 'weaponAssaultRifle', 'weaponMachinegun', 'weaponRocketLauncher', 'weaponFlamethrower', 'weaponLaser',
             'enemyGuard', 'enemyDead', // Keep legacy for tests if any
-            'zombie', 'soldier', 'alien'
+            'zombie', 'soldier', 'alien',
+            'zombieAttack', 'soldierAttack', 'alienAttack'
         ];
         items.forEach(type => {
             this.textures[type] = this.generateTexture(type);
@@ -32,7 +33,8 @@ class TextureManager {
             'ammoBullets', 'ammoShells', 'ammoBelt', 'ammoRockets', 'ammoFuel', 'ammoCells',
             'weaponShotgun', 'weaponAssaultRifle', 'weaponMachinegun', 'weaponRocketLauncher', 'weaponFlamethrower', 'weaponLaser',
             'enemyGuard', 'enemyDead',
-            'zombie', 'soldier', 'alien'
+            'zombie', 'soldier', 'alien',
+            'zombieAttack', 'soldierAttack', 'alienAttack'
         ].includes(type)) {
             return this.generateItemTexture(type);
         }
@@ -440,100 +442,100 @@ class TextureManager {
             ctx.beginPath();
             // Start behind back
             ctx.moveTo(cx, 36);
-            ctx.bezierCurveTo(cx+24, 20, cx+30, 50, cx+16, 56);
-            ctx.bezierCurveTo(cx+10, 60, cx-20, 55, cx-24, 45);
+            ctx.bezierCurveTo(cx + 24, 20, cx + 30, 50, cx + 16, 56);
+            ctx.bezierCurveTo(cx + 10, 60, cx - 20, 55, cx - 24, 45);
             ctx.stroke();
             // Ribs on tail
             ctx.strokeStyle = '#333';
             ctx.lineWidth = 1;
-            ctx.beginPath(); ctx.moveTo(cx+21,34); ctx.lineTo(cx+23,36); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(cx+23,40); ctx.lineTo(cx+25,42); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(cx+20,48); ctx.lineTo(cx+22,46); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(cx+16,52); ctx.lineTo(cx+18,50); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx + 21, 34); ctx.lineTo(cx + 23, 36); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx + 23, 40); ctx.lineTo(cx + 25, 42); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx + 20, 48); ctx.lineTo(cx + 22, 46); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx + 16, 52); ctx.lineTo(cx + 18, 50); ctx.stroke();
             // Tail barb
             ctx.fillStyle = '#444';
-            ctx.beginPath(); ctx.moveTo(cx-24,45); ctx.lineTo(cx-30,40); ctx.lineTo(cx-22,38); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(cx - 24, 45); ctx.lineTo(cx - 30, 40); ctx.lineTo(cx - 22, 38); ctx.fill();
 
             // Dorsal pipes (curving from back over shoulders)
             ctx.strokeStyle = '#1a1a1a';
             ctx.lineWidth = 3;
             // Left pipe
-            ctx.beginPath(); ctx.moveTo(cx-8, 26); ctx.quadraticCurveTo(cx-14, 10, cx-6, 12); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx - 8, 26); ctx.quadraticCurveTo(cx - 14, 10, cx - 6, 12); ctx.stroke();
             // Right pipe
-            ctx.beginPath(); ctx.moveTo(cx+8, 26); ctx.quadraticCurveTo(cx+14, 10, cx+6, 12); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx + 8, 26); ctx.quadraticCurveTo(cx + 14, 10, cx + 6, 12); ctx.stroke();
             ctx.strokeStyle = '#333';
             ctx.lineWidth = 1;
-            ctx.beginPath(); ctx.moveTo(cx-12, 16); ctx.lineTo(cx-10, 15); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(cx+12, 16); ctx.lineTo(cx+10, 15); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx - 12, 16); ctx.lineTo(cx - 10, 15); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx + 12, 16); ctx.lineTo(cx + 10, 15); ctx.stroke();
 
             // Legs (Bent, plantigrade/digitigrade mix)
             ctx.fillStyle = '#0a0a0a';
             ctx.strokeStyle = '#1a1a1a';
             ctx.lineWidth = 4;
             // Left leg
-            ctx.beginPath(); ctx.moveTo(cx-6, 38); ctx.lineTo(cx-16, 46); ctx.lineTo(cx-10, 56); ctx.stroke();
-            ctx.beginPath(); ctx.arc(cx-16, 46, 2, 0, Math.PI*2); ctx.fill(); // Knee
+            ctx.beginPath(); ctx.moveTo(cx - 6, 38); ctx.lineTo(cx - 16, 46); ctx.lineTo(cx - 10, 56); ctx.stroke();
+            ctx.beginPath(); ctx.arc(cx - 16, 46, 2, 0, Math.PI * 2); ctx.fill(); // Knee
             // Left Foot
-            ctx.beginPath(); ctx.moveTo(cx-10, 56); ctx.lineTo(cx-16, 62); ctx.lineTo(cx-12, 62); ctx.fill();
-            ctx.beginPath(); ctx.moveTo(cx-10, 56); ctx.lineTo(cx-6, 60); ctx.lineTo(cx-4, 58); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(cx - 10, 56); ctx.lineTo(cx - 16, 62); ctx.lineTo(cx - 12, 62); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(cx - 10, 56); ctx.lineTo(cx - 6, 60); ctx.lineTo(cx - 4, 58); ctx.fill();
             // Right leg
-            ctx.beginPath(); ctx.moveTo(cx+6, 38); ctx.lineTo(cx+16, 46); ctx.lineTo(cx+10, 56); ctx.stroke();
-            ctx.beginPath(); ctx.arc(cx+16, 46, 2, 0, Math.PI*2); ctx.fill(); // Knee
+            ctx.beginPath(); ctx.moveTo(cx + 6, 38); ctx.lineTo(cx + 16, 46); ctx.lineTo(cx + 10, 56); ctx.stroke();
+            ctx.beginPath(); ctx.arc(cx + 16, 46, 2, 0, Math.PI * 2); ctx.fill(); // Knee
             // Right Foot
-            ctx.beginPath(); ctx.moveTo(cx+10, 56); ctx.lineTo(cx+16, 62); ctx.lineTo(cx+12, 62); ctx.fill();
-            ctx.beginPath(); ctx.moveTo(cx+10, 56); ctx.lineTo(cx+6, 60); ctx.lineTo(cx+4, 58); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(cx + 10, 56); ctx.lineTo(cx + 16, 62); ctx.lineTo(cx + 12, 62); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(cx + 10, 56); ctx.lineTo(cx + 6, 60); ctx.lineTo(cx + 4, 58); ctx.fill();
 
             // Leg muscle highlights
             ctx.strokeStyle = '#333';
             ctx.lineWidth = 1;
-            ctx.beginPath(); ctx.moveTo(cx-10, 42); ctx.lineTo(cx-14, 46); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(cx+10, 42); ctx.lineTo(cx+14, 46); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx - 10, 42); ctx.lineTo(cx - 14, 46); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx + 10, 42); ctx.lineTo(cx + 14, 46); ctx.stroke();
 
             // Arms (Spindly, reaching outward and down)
             ctx.strokeStyle = '#111';
             ctx.lineWidth = 3;
             // Left arm
-            ctx.beginPath(); ctx.moveTo(cx-10, 24); ctx.lineTo(cx-20, 30); ctx.lineTo(cx-26, 44); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx - 10, 24); ctx.lineTo(cx - 20, 30); ctx.lineTo(cx - 26, 44); ctx.stroke();
             // Right arm
-            ctx.beginPath(); ctx.moveTo(cx+10, 24); ctx.lineTo(cx+20, 30); ctx.lineTo(cx+26, 44); ctx.stroke();
-            
+            ctx.beginPath(); ctx.moveTo(cx + 10, 24); ctx.lineTo(cx + 20, 30); ctx.lineTo(cx + 26, 44); ctx.stroke();
+
             // Shoulders
             ctx.fillStyle = '#1e1e1e';
-            ctx.beginPath(); ctx.arc(cx-10, 24, 3, 0, Math.PI*2); ctx.fill();
-            ctx.beginPath(); ctx.arc(cx+10, 24, 3, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(cx - 10, 24, 3, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(cx + 10, 24, 3, 0, Math.PI * 2); ctx.fill();
 
             // Claws (Large, sharp fingers pointing forward/down)
             ctx.strokeStyle = '#444';
             ctx.lineWidth = 1.5;
             // Left hand
-            ctx.beginPath(); ctx.moveTo(cx-26, 44); ctx.lineTo(cx-24, 52); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(cx-26, 44); ctx.lineTo(cx-28, 50); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(cx-26, 44); ctx.lineTo(cx-30, 48); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx - 26, 44); ctx.lineTo(cx - 24, 52); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx - 26, 44); ctx.lineTo(cx - 28, 50); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx - 26, 44); ctx.lineTo(cx - 30, 48); ctx.stroke();
             // Right hand
-            ctx.beginPath(); ctx.moveTo(cx+26, 44); ctx.lineTo(cx+24, 52); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(cx+26, 44); ctx.lineTo(cx+28, 50); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(cx+26, 44); ctx.lineTo(cx+30, 48); ctx.stroke();
-            
+            ctx.beginPath(); ctx.moveTo(cx + 26, 44); ctx.lineTo(cx + 24, 52); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx + 26, 44); ctx.lineTo(cx + 28, 50); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx + 26, 44); ctx.lineTo(cx + 30, 48); ctx.stroke();
+
             // Torso (Biomechanical ribs, narrow waist)
             ctx.fillStyle = '#0a0a0a';
             ctx.beginPath();
             ctx.moveTo(cx, 20); // Base of neck
-            ctx.lineTo(cx+9, 24); // Right pec
-            ctx.lineTo(cx+6, 32); // Lower rib
-            ctx.lineTo(cx+3, 38); // Hip
-            ctx.lineTo(cx-3, 38); // Left hip
-            ctx.lineTo(cx-6, 32); // Left lower rib
-            ctx.lineTo(cx-9, 24); // Left pec
+            ctx.lineTo(cx + 9, 24); // Right pec
+            ctx.lineTo(cx + 6, 32); // Lower rib
+            ctx.lineTo(cx + 3, 38); // Hip
+            ctx.lineTo(cx - 3, 38); // Left hip
+            ctx.lineTo(cx - 6, 32); // Left lower rib
+            ctx.lineTo(cx - 9, 24); // Left pec
             ctx.fill();
 
             // Ribs (Curving horizontal grey lines)
             ctx.strokeStyle = '#444';
             ctx.lineWidth = 1;
             // Chest plate
-            ctx.beginPath(); ctx.moveTo(cx-6, 26); ctx.quadraticCurveTo(cx, 28, cx+6, 26); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(cx-5, 29); ctx.quadraticCurveTo(cx, 31, cx+5, 29); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(cx-4, 32); ctx.quadraticCurveTo(cx, 34, cx+4, 32); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(cx-3, 35); ctx.quadraticCurveTo(cx, 36, cx+3, 35); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx - 6, 26); ctx.quadraticCurveTo(cx, 28, cx + 6, 26); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx - 5, 29); ctx.quadraticCurveTo(cx, 31, cx + 5, 29); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx - 4, 32); ctx.quadraticCurveTo(cx, 34, cx + 4, 32); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx - 3, 35); ctx.quadraticCurveTo(cx, 36, cx + 3, 35); ctx.stroke();
             // Center sternum line
             ctx.beginPath(); ctx.moveTo(cx, 24); ctx.lineTo(cx, 38); ctx.stroke();
 
@@ -541,33 +543,33 @@ class TextureManager {
             // Dome background (back part of the head rising up)
             ctx.fillStyle = '#080808';
             ctx.beginPath();
-            ctx.moveTo(cx-8, 16);
-            ctx.bezierCurveTo(cx-8, 4, cx-4, 0, cx, 0); // Left curve to top
-            ctx.bezierCurveTo(cx+4, 0, cx+8, 4, cx+8, 16); // Right curve to base
+            ctx.moveTo(cx - 8, 16);
+            ctx.bezierCurveTo(cx - 8, 4, cx - 4, 0, cx, 0); // Left curve to top
+            ctx.bezierCurveTo(cx + 4, 0, cx + 8, 4, cx + 8, 16); // Right curve to base
             ctx.fill();
-            
+
             // Ribbed details on the dome (forehead ridges)
             ctx.strokeStyle = '#222';
             ctx.lineWidth = 1;
-            ctx.beginPath(); ctx.moveTo(cx-4, 4); ctx.lineTo(cx+4, 4); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(cx-5, 7); ctx.lineTo(cx+5, 7); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(cx-6, 10); ctx.lineTo(cx+6, 10); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx - 4, 4); ctx.lineTo(cx + 4, 4); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx - 5, 7); ctx.lineTo(cx + 5, 7); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx - 6, 10); ctx.lineTo(cx + 6, 10); ctx.stroke();
             ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, 16); ctx.stroke(); // Center ridge
-            
+
             // Gloss highlight on dome
             ctx.strokeStyle = '#555';
-            ctx.beginPath(); ctx.moveTo(cx-5, 2); ctx.quadraticCurveTo(cx-2, 6, cx-6, 12); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx - 5, 2); ctx.quadraticCurveTo(cx - 2, 6, cx - 6, 12); ctx.stroke();
 
             // Cheeks/jaw structure
             ctx.fillStyle = '#111';
             ctx.beginPath();
-            ctx.moveTo(cx-8, 14);
-            ctx.lineTo(cx-6, 22); // Left jaw
-            ctx.lineTo(cx-4, 25); // Left chin
+            ctx.moveTo(cx - 8, 14);
+            ctx.lineTo(cx - 6, 22); // Left jaw
+            ctx.lineTo(cx - 4, 25); // Left chin
             ctx.lineTo(cx, 24);   // Center mouth open
-            ctx.lineTo(cx+4, 25); // Right chin
-            ctx.lineTo(cx+6, 22); // Right jaw
-            ctx.lineTo(cx+8, 14); // Back to side
+            ctx.lineTo(cx + 4, 25); // Right chin
+            ctx.lineTo(cx + 6, 22); // Right jaw
+            ctx.lineTo(cx + 8, 14); // Back to side
             ctx.fill();
 
             // Red glowing eyes (Reference specifies red eyes)
@@ -576,47 +578,340 @@ class TextureManager {
             ctx.shadowBlur = 4;
             ctx.fillStyle = '#ff0000';
             // Left eye
-            ctx.beginPath(); ctx.moveTo(cx-7, 16); ctx.lineTo(cx-2, 18); ctx.lineTo(cx-4, 15); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(cx - 7, 16); ctx.lineTo(cx - 2, 18); ctx.lineTo(cx - 4, 15); ctx.fill();
             // Right eye
-            ctx.beginPath(); ctx.moveTo(cx+7, 16); ctx.lineTo(cx+2, 18); ctx.lineTo(cx+4, 15); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(cx + 7, 16); ctx.lineTo(cx + 2, 18); ctx.lineTo(cx + 4, 15); ctx.fill();
             // Reset shadow
             ctx.shadowBlur = 0;
 
             // Bright core of the eye
             ctx.fillStyle = '#ffffff';
-            ctx.beginPath(); ctx.arc(cx-4, 16.5, 0.5, 0, Math.PI*2); ctx.fill();
-            ctx.beginPath(); ctx.arc(cx+4, 16.5, 0.5, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(cx - 4, 16.5, 0.5, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(cx + 4, 16.5, 0.5, 0, Math.PI * 2); ctx.fill();
 
             // Mouth (Open, showing inner jaw and teeth)
             ctx.fillStyle = '#000';
             ctx.beginPath();
-            ctx.moveTo(cx-4, 19); ctx.lineTo(cx, 17); ctx.lineTo(cx+4, 19); // Upper lip
-            ctx.lineTo(cx+3, 23); ctx.lineTo(cx, 25); ctx.lineTo(cx-3, 23); // Lower lip
+            ctx.moveTo(cx - 4, 19); ctx.lineTo(cx, 17); ctx.lineTo(cx + 4, 19); // Upper lip
+            ctx.lineTo(cx + 3, 23); ctx.lineTo(cx, 25); ctx.lineTo(cx - 3, 23); // Lower lip
             ctx.fill();
-            
+
             // Teeth (silver, highly detailed)
             ctx.fillStyle = '#ccc';
             // Upper
-            ctx.fillRect(cx-3, 19, 1, 2); ctx.fillRect(cx-1, 18, 1, 2); 
-            ctx.fillRect(cx+1, 18, 1, 2); ctx.fillRect(cx+3, 19, 1, 2);
+            ctx.fillRect(cx - 3, 19, 1, 2); ctx.fillRect(cx - 1, 18, 1, 2);
+            ctx.fillRect(cx + 1, 18, 1, 2); ctx.fillRect(cx + 3, 19, 1, 2);
             // Lower
-            ctx.fillRect(cx-2, 22, 1, 2); ctx.fillRect(cx, 23, 1, 2); ctx.fillRect(cx+2, 22, 1, 2);
+            ctx.fillRect(cx - 2, 22, 1, 2); ctx.fillRect(cx, 23, 1, 2); ctx.fillRect(cx + 2, 22, 1, 2);
 
             // Inner jaw extended slightly
             ctx.fillStyle = '#888';
-            ctx.fillRect(cx-1, 20, 2, 2);
+            ctx.fillRect(cx - 1, 20, 2, 2);
+
+            // Slime drips (translucent)
+            // Arms
+            ctx.fillStyle = '#334433';
+            ctx.fillRect(14, 22, 6, 14); // Left arm
+            ctx.fillRect(44, 22, 6, 14); // Right arm
+
+            // Gun (Assault Rifle detailing)
+            ctx.fillStyle = '#111111';
+            ctx.fillRect(6, 30, 36, 6); // Barrel & Body
+            ctx.fillRect(20, 36, 6, 8); // Magazine
+            ctx.fillRect(36, 30, 10, 8); // Stock
+            ctx.fillStyle = '#555555';
+            ctx.fillRect(10, 28, 4, 2); // Sight
+            ctx.fillStyle = '#aaaaaa';
+            ctx.fillRect(8, 32, 4, 2); // Muzzle flash guard 
+        }
+        else if (type === 'alien') {
+            // Front-facing highly detailed Xenomorph with red eyes
+
+            const cx = 32;
+
+            // Tail (looping behind right leg to the front)
+            ctx.strokeStyle = '#111';
+            ctx.lineWidth = 4;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.beginPath();
+            // Start behind back
+            ctx.moveTo(cx, 36);
+            ctx.bezierCurveTo(cx + 24, 20, cx + 30, 50, cx + 16, 56);
+            ctx.bezierCurveTo(cx + 10, 60, cx - 20, 55, cx - 24, 45);
+            ctx.stroke();
+            // Ribs on tail
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(cx + 21, 34); ctx.lineTo(cx + 23, 36); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx + 23, 40); ctx.lineTo(cx + 25, 42); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx + 20, 48); ctx.lineTo(cx + 22, 46); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx + 16, 52); ctx.lineTo(cx + 18, 50); ctx.stroke();
+            // Tail barb
+            ctx.fillStyle = '#444';
+            ctx.beginPath(); ctx.moveTo(cx - 24, 45); ctx.lineTo(cx - 30, 40); ctx.lineTo(cx - 22, 38); ctx.fill();
+
+            // Dorsal pipes (curving from back over shoulders)
+            ctx.strokeStyle = '#1a1a1a';
+            ctx.lineWidth = 3;
+            // Left pipe
+            ctx.beginPath(); ctx.moveTo(cx - 8, 26); ctx.quadraticCurveTo(cx - 14, 10, cx - 6, 12); ctx.stroke();
+            // Right pipe
+            ctx.beginPath(); ctx.moveTo(cx + 8, 26); ctx.quadraticCurveTo(cx + 14, 10, cx + 6, 12); ctx.stroke();
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(cx - 12, 16); ctx.lineTo(cx - 10, 15); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx + 12, 16); ctx.lineTo(cx + 10, 15); ctx.stroke();
+
+            // Legs (Bent, plantigrade/digitigrade mix)
+            ctx.fillStyle = '#0a0a0a';
+            ctx.strokeStyle = '#1a1a1a';
+            ctx.lineWidth = 4;
+            // Left leg
+            ctx.beginPath(); ctx.moveTo(cx - 6, 38); ctx.lineTo(cx - 16, 46); ctx.lineTo(cx - 10, 56); ctx.stroke();
+            ctx.beginPath(); ctx.arc(cx - 16, 46, 2, 0, Math.PI * 2); ctx.fill(); // Knee
+            // Left Foot
+            ctx.beginPath(); ctx.moveTo(cx - 10, 56); ctx.lineTo(cx - 16, 62); ctx.lineTo(cx - 12, 62); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(cx - 10, 56); ctx.lineTo(cx - 6, 60); ctx.lineTo(cx - 4, 58); ctx.fill();
+            // Right leg
+            ctx.beginPath(); ctx.moveTo(cx + 6, 38); ctx.lineTo(cx + 16, 46); ctx.lineTo(cx + 10, 56); ctx.stroke();
+            ctx.beginPath(); ctx.arc(cx + 16, 46, 2, 0, Math.PI * 2); ctx.fill(); // Knee
+            // Right Foot
+            ctx.beginPath(); ctx.moveTo(cx + 10, 56); ctx.lineTo(cx + 16, 62); ctx.lineTo(cx + 12, 62); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(cx + 10, 56); ctx.lineTo(cx + 6, 60); ctx.lineTo(cx + 4, 58); ctx.fill();
+
+            // Leg muscle highlights
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(cx - 10, 42); ctx.lineTo(cx - 14, 46); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx + 10, 42); ctx.lineTo(cx + 14, 46); ctx.stroke();
+
+            // Arms (Spindly, reaching outward and down)
+            ctx.strokeStyle = '#111';
+            ctx.lineWidth = 3;
+            // Left arm
+            ctx.beginPath(); ctx.moveTo(cx - 10, 24); ctx.lineTo(cx - 20, 30); ctx.lineTo(cx - 26, 44); ctx.stroke();
+            // Right arm
+            ctx.beginPath(); ctx.moveTo(cx + 10, 24); ctx.lineTo(cx + 20, 30); ctx.lineTo(cx + 26, 44); ctx.stroke();
+
+            // Shoulders
+            ctx.fillStyle = '#1e1e1e';
+            ctx.beginPath(); ctx.arc(cx - 10, 24, 3, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(cx + 10, 24, 3, 0, Math.PI * 2); ctx.fill();
+
+            // Claws (Large, sharp fingers pointing forward/down)
+            ctx.strokeStyle = '#444';
+            ctx.lineWidth = 1.5;
+            // Left hand
+            ctx.beginPath(); ctx.moveTo(cx - 26, 44); ctx.lineTo(cx - 24, 52); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx - 26, 44); ctx.lineTo(cx - 28, 50); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx - 26, 44); ctx.lineTo(cx - 30, 48); ctx.stroke();
+            // Right hand
+            ctx.beginPath(); ctx.moveTo(cx + 26, 44); ctx.lineTo(cx + 24, 52); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx + 26, 44); ctx.lineTo(cx + 28, 50); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx + 26, 44); ctx.lineTo(cx + 30, 48); ctx.stroke();
+
+            // Torso (Biomechanical ribs, narrow waist)
+            ctx.fillStyle = '#0a0a0a';
+            ctx.beginPath();
+            ctx.moveTo(cx, 20); // Base of neck
+            ctx.lineTo(cx + 9, 24); // Right pec
+            ctx.lineTo(cx + 6, 32); // Lower rib
+            ctx.lineTo(cx + 3, 38); // Hip
+            ctx.lineTo(cx - 3, 38); // Left hip
+            ctx.lineTo(cx - 6, 32); // Left lower rib
+            ctx.lineTo(cx - 9, 24); // Left pec
+            ctx.fill();
+
+            // Ribs (Curving horizontal grey lines)
+            ctx.strokeStyle = '#444';
+            ctx.lineWidth = 1;
+            // Chest plate
+            ctx.beginPath(); ctx.moveTo(cx - 6, 26); ctx.quadraticCurveTo(cx, 28, cx + 6, 26); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx - 5, 29); ctx.quadraticCurveTo(cx, 31, cx + 5, 29); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx - 4, 32); ctx.quadraticCurveTo(cx, 34, cx + 4, 32); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx - 3, 35); ctx.quadraticCurveTo(cx, 36, cx + 3, 35); ctx.stroke();
+            // Center sternum line
+            ctx.beginPath(); ctx.moveTo(cx, 24); ctx.lineTo(cx, 38); ctx.stroke();
+
+            // Head (Central dome facing forward and curving back, jaws open, red eyes)
+            // Dome background (back part of the head rising up)
+            ctx.fillStyle = '#080808';
+            ctx.beginPath();
+            ctx.moveTo(cx - 8, 16);
+            ctx.bezierCurveTo(cx - 8, 4, cx - 4, 0, cx, 0); // Left curve to top
+            ctx.bezierCurveTo(cx + 4, 0, cx + 8, 4, cx + 8, 16); // Right curve to base
+            ctx.fill();
+
+            // Ribbed details on the dome (forehead ridges)
+            ctx.strokeStyle = '#222';
+            ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(cx - 4, 4); ctx.lineTo(cx + 4, 4); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx - 5, 7); ctx.lineTo(cx + 5, 7); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx - 6, 10); ctx.lineTo(cx + 6, 10); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, 16); ctx.stroke(); // Center ridge
+
+            // Gloss highlight on dome
+            ctx.strokeStyle = '#555';
+            ctx.beginPath(); ctx.moveTo(cx - 5, 2); ctx.quadraticCurveTo(cx - 2, 6, cx - 6, 12); ctx.stroke();
+
+            // Cheeks/jaw structure
+            ctx.fillStyle = '#111';
+            ctx.beginPath();
+            ctx.moveTo(cx - 8, 14);
+            ctx.lineTo(cx - 6, 22); // Left jaw
+            ctx.lineTo(cx - 4, 25); // Left chin
+            ctx.lineTo(cx, 24);   // Center mouth open
+            ctx.lineTo(cx + 4, 25); // Right chin
+            ctx.lineTo(cx + 6, 22); // Right jaw
+            ctx.lineTo(cx + 8, 14); // Back to side
+            ctx.fill();
+
+            // Red glowing eyes (Reference specifies red eyes)
+            // They are angled, menacing slits
+            ctx.shadowColor = '#ff0000';
+            ctx.shadowBlur = 4;
+            ctx.fillStyle = '#ff0000';
+            // Left eye
+            ctx.beginPath(); ctx.moveTo(cx - 7, 16); ctx.lineTo(cx - 2, 18); ctx.lineTo(cx - 4, 15); ctx.fill();
+            // Right eye
+            ctx.beginPath(); ctx.moveTo(cx + 7, 16); ctx.lineTo(cx + 2, 18); ctx.lineTo(cx + 4, 15); ctx.fill();
+            // Reset shadow
+            ctx.shadowBlur = 0;
+
+            // Bright core of the eye
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath(); ctx.arc(cx - 4, 16.5, 0.5, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(cx + 4, 16.5, 0.5, 0, Math.PI * 2); ctx.fill();
+
+            // Mouth (Open, showing inner jaw and teeth)
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.moveTo(cx - 4, 19); ctx.lineTo(cx, 17); ctx.lineTo(cx + 4, 19); // Upper lip
+            ctx.lineTo(cx + 3, 23); ctx.lineTo(cx, 25); ctx.lineTo(cx - 3, 23); // Lower lip
+            ctx.fill();
+
+            // Teeth (silver, highly detailed)
+            ctx.fillStyle = '#ccc';
+            // Upper
+            ctx.fillRect(cx - 3, 19, 1, 2); ctx.fillRect(cx - 1, 18, 1, 2);
+            ctx.fillRect(cx + 1, 18, 1, 2); ctx.fillRect(cx + 3, 19, 1, 2);
+            // Lower
+            ctx.fillRect(cx - 2, 22, 1, 2); ctx.fillRect(cx, 23, 1, 2); ctx.fillRect(cx + 2, 22, 1, 2);
+
+            // Inner jaw extended slightly
+            ctx.fillStyle = '#888';
+            ctx.fillRect(cx - 1, 20, 2, 2);
 
             // Slime drips (translucent)
             ctx.fillStyle = 'rgba(200, 255, 200, 0.5)';
-            ctx.fillRect(cx-4, 25, 1, 4); // From chin
-            ctx.fillRect(cx+2, 24, 1, 6); // From chin
-            ctx.fillRect(cx-24, 45, 1, 5); // From left claw
-            ctx.fillRect(cx+24, 46, 1, 4); // From right claw
-            ctx.fillRect(cx-14, 47, 1, 3); // From knee
-        } // End of generateItemTexture
+            ctx.fillRect(cx - 4, 25, 1, 4); // From chin
+            ctx.fillRect(cx + 2, 24, 1, 6); // From chin
+            ctx.fillRect(cx - 24, 45, 1, 5); // From left claw
+            ctx.fillRect(cx + 24, 46, 1, 4); // From right claw
+            ctx.fillRect(cx - 14, 47, 1, 3); // From knee
+        }
+        else if (type === 'zombieAttack') {
+            // Zombie Attack: Both arms raised and reaching forward
+            ctx.fillStyle = '#554433'; ctx.fillRect(18, 20, 28, 26);
+            ctx.fillStyle = '#66aa66'; ctx.beginPath(); ctx.moveTo(24, 20); ctx.lineTo(32, 34); ctx.lineTo(40, 20); ctx.fill();
+            ctx.fillStyle = '#66aa66'; ctx.fillRect(22, 4, 20, 18);
+            ctx.fillStyle = '#dd6688'; ctx.beginPath(); ctx.arc(32, 6, 8, Math.PI, 0); ctx.fill();
+            ctx.fillStyle = '#222222'; ctx.fillRect(26, 10, 4, 4); ctx.fillRect(36, 12, 3, 3);
+            ctx.fillStyle = '#331111'; ctx.fillRect(28, 18, 10, 4); // Mouth wider open
+            ctx.fillStyle = '#aaaaaa'; ctx.fillRect(29, 18, 2, 2); ctx.fillRect(33, 18, 2, 2);
+            ctx.fillStyle = '#334455'; ctx.fillRect(20, 46, 10, 16); ctx.fillRect(36, 46, 8, 10);
+            ctx.fillStyle = '#66aa66'; ctx.fillRect(37, 56, 6, 8);
+
+            // Both arms attack forward
+            ctx.fillStyle = '#554433'; ctx.fillRect(4, 20, 14, 8); // Right shoulder extending out
+            ctx.fillStyle = '#66aa66'; ctx.fillRect(0, 18, 8, 12); // Right claw
+
+            ctx.fillStyle = '#554433'; ctx.fillRect(46, 20, 14, 8); // Left shoulder extending out
+            ctx.fillStyle = '#66aa66'; ctx.fillRect(56, 18, 8, 12); // Left claw
+
+            ctx.fillStyle = '#880000'; ctx.fillRect(20, 26, 6, 8); ctx.fillRect(26, 32, 4, 4); ctx.fillRect(40, 48, 6, 14);
+        }
+        else if (type === 'soldierAttack') {
+            // Soldier Attack: Muzzle Flash
+            ctx.fillStyle = '#ffccaa'; ctx.fillRect(24, 6, 16, 14);
+            ctx.fillStyle = '#223322'; ctx.beginPath(); ctx.arc(32, 10, 10, Math.PI, 0); ctx.fill(); ctx.fillRect(22, 10, 20, 4);
+            ctx.fillStyle = '#111111'; ctx.fillRect(24, 12, 16, 4);
+            ctx.fillStyle = '#ff8800'; ctx.fillRect(26, 13, 4, 2);
+            ctx.fillStyle = '#334433'; ctx.fillRect(20, 20, 24, 24);
+            ctx.fillStyle = '#112211'; ctx.fillRect(22, 22, 20, 18);
+            ctx.fillStyle = '#445544'; ctx.fillRect(24, 34, 6, 6); ctx.fillRect(34, 34, 6, 6);
+            ctx.fillStyle = '#111111'; ctx.fillRect(20, 40, 24, 4);
+            ctx.fillStyle = '#aaaaaa'; ctx.fillRect(30, 40, 4, 4);
+            ctx.fillStyle = '#334433'; ctx.fillRect(22, 44, 8, 14); ctx.fillRect(34, 44, 8, 14);
+            ctx.fillStyle = '#111111'; ctx.fillRect(20, 58, 10, 6); ctx.fillRect(34, 58, 10, 6);
+            ctx.fillStyle = '#334433'; ctx.fillRect(14, 22, 6, 14); ctx.fillRect(44, 22, 6, 14);
+
+            // Gun
+            ctx.fillStyle = '#111111'; ctx.fillRect(6, 30, 36, 6); ctx.fillRect(20, 36, 6, 8); ctx.fillRect(36, 30, 10, 8);
+            ctx.fillStyle = '#555555'; ctx.fillRect(10, 28, 4, 2);
+            ctx.fillStyle = '#aaaaaa'; ctx.fillRect(8, 32, 4, 2);
+
+            // Muzzle Flash
+            ctx.fillStyle = '#ffff00';
+            ctx.beginPath(); ctx.arc(4, 33, 6, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#ff8800';
+            ctx.beginPath(); ctx.arc(4, 33, 4, 0, Math.PI * 2); ctx.fill();
+        }
+        else if (type === 'alienAttack') {
+            // Alien Attack: Claws raised, inner jaw out
+            const cx = 32;
+            ctx.strokeStyle = '#111'; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+            ctx.beginPath(); ctx.moveTo(cx, 36); ctx.bezierCurveTo(cx + 24, 20, cx + 30, 50, cx + 16, 56); ctx.bezierCurveTo(cx + 10, 60, cx - 20, 55, cx - 24, 45); ctx.stroke();
+            ctx.strokeStyle = '#333'; ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(cx + 21, 34); ctx.lineTo(cx + 23, 36); ctx.stroke(); ctx.beginPath(); ctx.moveTo(cx + 23, 40); ctx.lineTo(cx + 25, 42); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx + 20, 48); ctx.lineTo(cx + 22, 46); ctx.stroke(); ctx.beginPath(); ctx.moveTo(cx + 16, 52); ctx.lineTo(cx + 18, 50); ctx.stroke();
+            ctx.fillStyle = '#444'; ctx.beginPath(); ctx.moveTo(cx - 24, 45); ctx.lineTo(cx - 30, 40); ctx.lineTo(cx - 22, 38); ctx.fill();
+            ctx.strokeStyle = '#1a1a1a'; ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.moveTo(cx - 8, 26); ctx.quadraticCurveTo(cx - 14, 10, cx - 6, 12); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx + 8, 26); ctx.quadraticCurveTo(cx + 14, 10, cx + 6, 12); ctx.stroke();
+            ctx.fillStyle = '#0a0a0a'; ctx.strokeStyle = '#1a1a1a'; ctx.lineWidth = 4;
+            ctx.beginPath(); ctx.moveTo(cx - 6, 38); ctx.lineTo(cx - 16, 46); ctx.lineTo(cx - 10, 56); ctx.stroke(); ctx.beginPath(); ctx.arc(cx - 16, 46, 2, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(cx - 10, 56); ctx.lineTo(cx - 16, 62); ctx.lineTo(cx - 12, 62); ctx.fill(); ctx.beginPath(); ctx.moveTo(cx - 10, 56); ctx.lineTo(cx - 6, 60); ctx.lineTo(cx - 4, 58); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(cx + 6, 38); ctx.lineTo(cx + 16, 46); ctx.lineTo(cx + 10, 56); ctx.stroke(); ctx.beginPath(); ctx.arc(cx + 16, 46, 2, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(cx + 10, 56); ctx.lineTo(cx + 16, 62); ctx.lineTo(cx + 12, 62); ctx.fill(); ctx.beginPath(); ctx.moveTo(cx + 10, 56); ctx.lineTo(cx + 6, 60); ctx.lineTo(cx + 4, 58); ctx.fill();
+
+            // Raised Arms (Attacking)
+            ctx.strokeStyle = '#111'; ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.moveTo(cx - 10, 24); ctx.lineTo(cx - 24, 16); ctx.lineTo(cx - 30, 24); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx + 10, 24); ctx.lineTo(cx + 24, 16); ctx.lineTo(cx + 30, 24); ctx.stroke();
+            ctx.fillStyle = '#1e1e1e'; ctx.beginPath(); ctx.arc(cx - 10, 24, 3, 0, Math.PI * 2); ctx.fill(); ctx.beginPath(); ctx.arc(cx + 10, 24, 3, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = '#555'; ctx.lineWidth = 2; // Brighter claws
+            ctx.beginPath(); ctx.moveTo(cx - 30, 24); ctx.lineTo(cx - 28, 32); ctx.stroke(); ctx.beginPath(); ctx.moveTo(cx - 30, 24); ctx.lineTo(cx - 32, 30); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx + 30, 24); ctx.lineTo(cx + 28, 32); ctx.stroke(); ctx.beginPath(); ctx.moveTo(cx + 30, 24); ctx.lineTo(cx + 32, 30); ctx.stroke();
+
+            ctx.fillStyle = '#0a0a0a'; ctx.beginPath(); ctx.moveTo(cx, 20); ctx.lineTo(cx + 9, 24); ctx.lineTo(cx + 6, 32); ctx.lineTo(cx + 3, 38); ctx.lineTo(cx - 3, 38); ctx.lineTo(cx - 6, 32); ctx.lineTo(cx - 9, 24); ctx.fill();
+            ctx.strokeStyle = '#444'; ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(cx - 6, 26); ctx.quadraticCurveTo(cx, 28, cx + 6, 26); ctx.stroke(); ctx.beginPath(); ctx.moveTo(cx - 5, 29); ctx.quadraticCurveTo(cx, 31, cx + 5, 29); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx - 4, 32); ctx.quadraticCurveTo(cx, 34, cx + 4, 32); ctx.stroke(); ctx.beginPath(); ctx.moveTo(cx - 3, 35); ctx.quadraticCurveTo(cx, 36, cx + 3, 35); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(cx, 24); ctx.lineTo(cx, 38); ctx.stroke();
+
+            ctx.fillStyle = '#080808'; ctx.beginPath(); ctx.moveTo(cx - 8, 16); ctx.bezierCurveTo(cx - 8, 4, cx - 4, 0, cx, 0); ctx.bezierCurveTo(cx + 4, 0, cx + 8, 4, cx + 8, 16); ctx.fill();
+            ctx.fillStyle = '#111'; ctx.beginPath(); ctx.moveTo(cx - 8, 14); ctx.lineTo(cx - 6, 22); ctx.lineTo(cx - 4, 25); ctx.lineTo(cx, 24); ctx.lineTo(cx + 4, 25); ctx.lineTo(cx + 6, 22); ctx.lineTo(cx + 8, 14); ctx.fill();
+
+            ctx.shadowColor = '#ff0000'; ctx.shadowBlur = 6; ctx.fillStyle = '#ff0000';
+            ctx.beginPath(); ctx.moveTo(cx - 7, 16); ctx.lineTo(cx - 2, 18); ctx.lineTo(cx - 4, 15); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(cx + 7, 16); ctx.lineTo(cx + 2, 18); ctx.lineTo(cx + 4, 15); ctx.fill();
+            ctx.shadowBlur = 0; ctx.fillStyle = '#ffffff';
+            ctx.beginPath(); ctx.arc(cx - 4, 16.5, 0.5, 0, Math.PI * 2); ctx.fill(); ctx.beginPath(); ctx.arc(cx + 4, 16.5, 0.5, 0, Math.PI * 2); ctx.fill();
+
+            ctx.fillStyle = '#000'; ctx.beginPath(); ctx.moveTo(cx - 5, 18); ctx.lineTo(cx, 16); ctx.lineTo(cx + 5, 18); ctx.lineTo(cx + 4, 24); ctx.lineTo(cx, 26); ctx.lineTo(cx - 4, 24); ctx.fill();
+
+            // Inner jaw jutting forward
+            ctx.fillStyle = '#888'; ctx.fillRect(cx - 2, 22, 4, 3);
+            ctx.fillStyle = '#aaa'; ctx.fillRect(cx - 1, 25, 1, 2); ctx.fillRect(cx + 1, 25, 1, 2); // Tiny teeth
+
+            ctx.fillStyle = 'rgba(200, 255, 200, 0.5)';
+            ctx.fillRect(cx - 4, 25, 1, 4); ctx.fillRect(cx + 2, 24, 1, 6);
+        }
 
         return canvas;
-    }
+    } // End of generateItemTexture
 
     getTexture(id) {
         return this.textures[id];
