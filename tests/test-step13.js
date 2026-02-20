@@ -26,6 +26,7 @@ function testStep13(T) {
     // Test Attack State (Zombie melee range is 1.0)
     enemy.x = 2.5;
     enemy.y = 1.5; // Dist = 1.0
+    enemy.attackTimer = 0; // Reset timer from any previous attacks during the loop
 
     let damageTaken = false;
     player.takeDamage = function (dmg) { damageTaken = true; }; // Mock damage
