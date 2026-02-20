@@ -12,6 +12,7 @@ class TextureManager {
         this.textures[3] = this.generateTexture('tech');
         this.textures[4] = this.generateTexture('concrete');
         this.textures[5] = this.generateTexture('door');
+        this.textures[8] = this.generateTexture('elevator');
 
         // Items
         const items = [

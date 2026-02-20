@@ -11,7 +11,7 @@ class Renderer {
         this.zBuffer = new Array(this.width).fill(0);
     }
 
-    render3D(player, map, raycaster, textureManager) {
+    render3D(player, map, raycaster, textureManager, isElevatorActive = false) {
         // Draw ceiling and floor
         this.ctx.fillStyle = '#333333'; // Ceiling
         this.ctx.fillRect(this.x, this.y, this.width, this.height / 2);
@@ -58,6 +58,15 @@ class Renderer {
                     // Fallback to solid color
                     let color = map.getColor(result.hit);
                     this.ctx.fillStyle = color;
+                    let drawY = (this.height - lineHeight) / 2;
+                    this.ctx.fillRect(this.x + x, this.y + drawY, 1, lineHeight);
+                }
+
+                // Elevator Active Flickering
+                if (result.hit === 8 && isElevatorActive) {
+                    let time = Date.now() / 200;
+                    let alpha = 0.2 + (Math.sin(time) * 0.2); // oscillates between 0.0 and 0.4
+                    this.ctx.fillStyle = `rgba(0, 255, 0, ${alpha})`;
                     let drawY = (this.height - lineHeight) / 2;
                     this.ctx.fillRect(this.x + x, this.y + drawY, 1, lineHeight);
                 }

@@ -18,8 +18,9 @@ let hud;
 let sprites = [];
 let enemies = [];
 let roster;
+let levelManager; // NEW
 
-let gameState = 'SELECT_CHARACTER'; // SELECT_CHARACTER, PLAYING, KIA, GAMEOVER
+let gameState = 'SELECT_CHARACTER'; // SELECT_CHARACTER, PLAYING, KIA, GAMEOVER, LEVEL_COMPLETE, VICTORY
 
 function init() {
     console.log('Game Initialized');
@@ -28,46 +29,39 @@ function init() {
     roster = new CharacterRoster();
     textureManager = new TextureManager();
     hud = new HUD(CONFIG);
+    levelManager = new LevelManager(); // NEW
 
     requestAnimationFrame(gameLoop);
 }
 
-function startLevel(characterConfig) {
-    map = new GameMap(testLevel);
-    player = new Player(1.5, 1.5, 0, map, characterConfig);
+function startLevel(characterConfig, isNextLevel = false) {
+    const levelData = levelManager.getCurrentLevelData();
+    map = new GameMap(levelData.map);
+
+    if (isNextLevel && player) {
+        // Keep surviving player stats, just move them and reset map reference
+        player.x = levelData.playerStart.x;
+        player.y = levelData.playerStart.y;
+        player.angle = levelData.playerStart.angle;
+        player.map = map;
+    } else {
+        // New character starting from level 1
+        levelManager.currentLevel = 0;
+        const newLevelData = levelManager.getCurrentLevelData();
+        map = new GameMap(newLevelData.map);
+        player = new Player(newLevelData.playerStart.x, newLevelData.playerStart.y, newLevelData.playerStart.angle, map, characterConfig);
+    }
 
     // Step 10: Sprites - Placing all types for verification
-    sprites = [
-        new Sprite(3.5, 6.5, 'healthBig'),     // Medkit (+25 HP)
-        new Sprite(4.5, 6.5, 'armor'),         // Armor (+25)
-        new Sprite(5.5, 6.5, 'key'),           // Key
-
-        // Weapons
-        new Sprite(2.5, 6.5, 'weaponShotgun'),
-        new Sprite(2.5, 7.5, 'weaponAssaultRifle'),
-        new Sprite(2.5, 8.5, 'weaponMachinegun'),
-        new Sprite(3.5, 8.5, 'weaponRocketLauncher'),
-        new Sprite(4.5, 8.5, 'weaponFlamethrower'),
-        new Sprite(5.5, 8.5, 'weaponLaser'),
-
-        // Ammo
-        new Sprite(6.5, 6.5, 'ammoBullets'),
-        new Sprite(6.5, 7.5, 'ammoShells'),
-        new Sprite(6.5, 8.5, 'ammoBelt'),
-        new Sprite(7.5, 6.5, 'ammoRockets'),
-        new Sprite(7.5, 7.5, 'ammoFuel'),
-        new Sprite(7.5, 8.5, 'ammoCells')
-    ];
+    sprites = levelManager.getCurrentLevelData().items.map(item => {
+        return new Sprite(item.x, item.y, item.type);
+    });
     sprites.forEach(s => s.visible = true);
 
-    // Step 11: Enemies (5 enemies of different types)
-    enemies = [
-        new Enemy(14.5, 14.5, 'soldier'),
-        new Enemy(16.5, 14.5, 'soldier'),
-        new Enemy(15.5, 16.5, 'zombie'),
-        new Enemy(14.5, 17.5, 'zombie'),
-        new Enemy(17.5, 17.5, 'alien')
-    ];
+    // Step 11: Enemies
+    enemies = levelManager.getCurrentLevelData().enemies.map(e => {
+        return new Enemy(e.x, e.y, e.type);
+    });
 
     raycaster = new Raycaster(map);
     renderer = new Renderer(ctx, CONFIG);
@@ -76,6 +70,7 @@ function startLevel(characterConfig) {
 }
 
 let kiaTimer = 0;
+let levelTimer = 0; // shared timer for transitions
 
 function update(dt) {
     if (gameState === 'SELECT_CHARACTER') {
@@ -115,8 +110,35 @@ function update(dt) {
         return;
     }
 
+    if (gameState === 'LEVEL_COMPLETE') {
+        levelTimer -= dt;
+        if (levelTimer <= 0) {
+            if (levelManager.nextLevel()) {
+                startLevel(null, true); // Keep player
+            } else {
+                gameState = 'VICTORY';
+            }
+        }
+        return;
+    }
+
+    if (gameState === 'VICTORY') {
+        if (Input.isActionActive('shoot')) { // Press Enter to restart
+            gameState = 'SELECT_CHARACTER';
+            roster = new CharacterRoster(); // Reset roster
+            Input.keys['Space'] = false;
+            Input.keys['Enter'] = false;
+        }
+        return;
+    }
+
     if (gameState === 'GAMEOVER') {
-        // Wait for restart maybe later
+        if (Input.isActionActive('shoot')) { // Press Enter to restart
+            gameState = 'SELECT_CHARACTER';
+            roster = new CharacterRoster(); // Reset roster
+            Input.keys['Space'] = false;
+            Input.keys['Enter'] = false;
+        }
         return;
     }
 
@@ -128,6 +150,19 @@ function update(dt) {
                 roster.kill(player.name);
                 gameState = 'KIA';
                 kiaTimer = 3.0; // Show KIA screen for 3 seconds
+                return;
+            }
+
+            // Sync enemies count to LevelManager
+            const enemiesLeft = enemies.filter(e => e.hp > 0).length;
+            levelManager.setEnemiesLeft(enemiesLeft);
+
+            // Check Elevator Interaction (Type 8)
+            const mapCellX = Math.floor(player.x);
+            const mapCellY = Math.floor(player.y);
+            if (map.grid[mapCellY][mapCellX] === 8 && levelManager.isElevatorActive()) {
+                gameState = 'LEVEL_COMPLETE';
+                levelTimer = 3.0; // 3 seconds before next level
                 return;
             }
 
@@ -305,6 +340,35 @@ function draw() {
         ctx.fillStyle = '#fff';
         ctx.font = '20px monospace';
         ctx.fillText("The team has been wiped out.", CONFIG.SCREEN_WIDTH / 2, CONFIG.SCREEN_HEIGHT / 2 + 50);
+        return;
+    }
+
+    if (gameState === 'LEVEL_COMPLETE') {
+        ctx.fillStyle = '#002200';
+        ctx.fillRect(0, 0, CONFIG.SCREEN_WIDTH, CONFIG.SCREEN_HEIGHT);
+        ctx.fillStyle = '#0f0';
+        ctx.font = '50px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText("SECTOR SECURED", CONFIG.SCREEN_WIDTH / 2, CONFIG.SCREEN_HEIGHT / 2 - 30);
+        ctx.fillStyle = '#fff';
+        ctx.font = '30px monospace';
+        ctx.fillText("Descending to next level...", CONFIG.SCREEN_WIDTH / 2, CONFIG.SCREEN_HEIGHT / 2 + 30);
+        return;
+    }
+
+    if (gameState === 'VICTORY') {
+        ctx.fillStyle = '#000044';
+        ctx.fillRect(0, 0, CONFIG.SCREEN_WIDTH, CONFIG.SCREEN_HEIGHT);
+        ctx.fillStyle = '#00ffff';
+        ctx.font = '60px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText("MISSION ACCOMPLISHED", CONFIG.SCREEN_WIDTH / 2, CONFIG.SCREEN_HEIGHT / 2 - 40);
+        ctx.fillStyle = '#fff';
+        ctx.font = '24px monospace';
+        ctx.fillText("The station is clear.", CONFIG.SCREEN_WIDTH / 2, CONFIG.SCREEN_HEIGHT / 2 + 20);
+        ctx.fillStyle = '#aaa';
+        ctx.font = '16px monospace';
+        ctx.fillText("Press ENTER to return to roster.", CONFIG.SCREEN_WIDTH / 2, CONFIG.SCREEN_HEIGHT / 2 + 60);
         return;
     }
 
