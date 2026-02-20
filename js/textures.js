@@ -321,61 +321,169 @@ class TextureManager {
         }
         // New Enemies for Step 11
         else if (type === 'zombie') {
-            // Green Humanoid
-            // Skin
-            ctx.fillStyle = '#55aa55';
-            ctx.fillRect(24, 4, 16, 16); // Head
-            // Body (Ragged clothes)
-            ctx.fillStyle = '#445544';
-            ctx.fillRect(20, 20, 24, 24);
-            // Legs
-            ctx.fillStyle = '#334433';
-            ctx.fillRect(22, 44, 8, 20);
-            ctx.fillRect(34, 44, 8, 20);
-            // Arms (outstretched)
-            ctx.fillStyle = '#55aa55';
-            ctx.fillRect(10, 24, 10, 8);
-            ctx.fillRect(44, 24, 10, 8);
+            // Zombie: Pale green skin, torn brown clothes, blood, asymmetrical
+
+            // Body (Torn clothes)
+            ctx.fillStyle = '#554433';
+            ctx.fillRect(18, 20, 28, 26); // Torso
+            // Shirt tear
+            ctx.fillStyle = '#66aa66'; // Exposed chest
+            ctx.beginPath();
+            ctx.moveTo(24, 20); ctx.lineTo(32, 34); ctx.lineTo(40, 20); ctx.fill();
+
+            // Head (pale green)
+            ctx.fillStyle = '#66aa66';
+            ctx.fillRect(22, 4, 20, 18);
+            ctx.fillStyle = '#dd6688'; // Brain
+            ctx.beginPath(); ctx.arc(32, 6, 8, Math.PI, 0); ctx.fill();
+            // Eyes & Mouth (Hollow)
+            ctx.fillStyle = '#222222';
+            ctx.fillRect(26, 10, 4, 4);
+            ctx.fillRect(36, 12, 3, 3); // Wonky eye
+            ctx.fillStyle = '#331111';
+            ctx.fillRect(28, 18, 10, 3);
+            ctx.fillStyle = '#aaaaaa'; // Teeth
+            ctx.fillRect(29, 18, 2, 2); ctx.fillRect(33, 18, 2, 2);
+
+            // Legs (torn trousers, one exposed bone/leg)
+            ctx.fillStyle = '#334455'; // Trousers
+            ctx.fillRect(20, 46, 10, 16);
+            ctx.fillRect(36, 46, 8, 10); // Missing lower leg
+            ctx.fillStyle = '#66aa66'; // Exposed leg
+            ctx.fillRect(37, 56, 6, 8);
+
+            // Arms (one outstretched, one dangling)
+            ctx.fillStyle = '#554433';
+            ctx.fillRect(8, 20, 10, 8); // Right shoulder
+            ctx.fillStyle = '#66aa66';
+            ctx.fillRect(0, 22, 12, 4); // Right arm forward
+            ctx.fillStyle = '#554433';
+            ctx.fillRect(46, 20, 8, 12); // Left shoulder/sleeve
+            ctx.fillStyle = '#66aa66';
+            ctx.fillRect(48, 32, 4, 12); // Left arm down
+
+            // Blood stains
+            ctx.fillStyle = '#880000';
+            ctx.fillRect(20, 26, 6, 8);
+            ctx.fillRect(26, 32, 4, 4);
+            ctx.fillRect(40, 48, 6, 14);
+            ctx.fillRect(8, 22, 4, 4);
         }
         else if (type === 'soldier') {
-            // Red Humanoid (Guard replacement)
-            // Skin
-            ctx.fillStyle = '#ffcccc';
-            ctx.fillRect(24, 4, 16, 16);
-            // Helmet
-            ctx.fillStyle = '#550000';
-            ctx.fillRect(22, 2, 20, 6);
-            // Body (Red Uniform)
-            ctx.fillStyle = '#aa0000';
+            // Soldier: Tactical gear, helmet, visor, rifle
+
+            // Head/Skin
+            ctx.fillStyle = '#ffccaa';
+            ctx.fillRect(24, 6, 16, 14);
+
+            // Helmet (Dark green, brim)
+            ctx.fillStyle = '#223322';
+            ctx.beginPath();
+            ctx.arc(32, 10, 10, Math.PI, 0);
+            ctx.fill();
+            ctx.fillRect(22, 10, 20, 4); // Brim
+
+            // Visor / Goggles
+            ctx.fillStyle = '#111111';
+            ctx.fillRect(24, 12, 16, 4);
+            ctx.fillStyle = '#ff8800'; // Reflection
+            ctx.fillRect(26, 13, 4, 2);
+
+            // Body (Armor Vest & Pads)  
+            ctx.fillStyle = '#334433'; // Undershirt
             ctx.fillRect(20, 20, 24, 24);
-            // Legs
-            ctx.fillStyle = '#550000';
-            ctx.fillRect(22, 44, 8, 20);
-            ctx.fillRect(34, 44, 8, 20);
-            // Gun
-            ctx.fillStyle = '#111';
-            ctx.fillRect(12, 30, 24, 6);
+            ctx.fillStyle = '#112211'; // Tactical Vest
+            ctx.fillRect(22, 22, 20, 18);
+            // Pouches
+            ctx.fillStyle = '#445544';
+            ctx.fillRect(24, 34, 6, 6);
+            ctx.fillRect(34, 34, 6, 6);
+            // Belt
+            ctx.fillStyle = '#111111';
+            ctx.fillRect(20, 40, 24, 4);
+            ctx.fillStyle = '#aaaaaa'; // Buckle
+            ctx.fillRect(30, 40, 4, 4);
+
+            // Legs & Boots
+            ctx.fillStyle = '#334433'; // Pants
+            ctx.fillRect(22, 44, 8, 14);
+            ctx.fillRect(34, 44, 8, 14);
+            ctx.fillStyle = '#111111'; // Boots
+            ctx.fillRect(20, 58, 10, 6);
+            ctx.fillRect(34, 58, 10, 6);
+
+            // Arms
+            ctx.fillStyle = '#334433';
+            ctx.fillRect(14, 22, 6, 14); // Left arm
+            ctx.fillRect(44, 22, 6, 14); // Right arm
+
+            // Gun (Assault Rifle detailing)
+            ctx.fillStyle = '#111111';
+            ctx.fillRect(6, 30, 36, 6); // Barrel & Body
+            ctx.fillRect(20, 36, 6, 8); // Magazine
+            ctx.fillRect(36, 30, 10, 8); // Stock
+            ctx.fillStyle = '#555555';
+            ctx.fillRect(10, 28, 4, 2); // Sight
+            ctx.fillStyle = '#aaaaaa';
+            ctx.fillRect(8, 32, 4, 2); // Muzzle flash guard 
         }
         else if (type === 'alien') {
-            // Purple Humanoid
-            // Head (Big)
-            ctx.fillStyle = '#aa00aa';
+            // Alien: Purple, insectoid limbs, scaly body, large glowing eyes
+
+            // Tapered scaly body
+            ctx.fillStyle = '#5500aa';
             ctx.beginPath();
-            ctx.ellipse(32, 12, 10, 12, 0, 0, Math.PI * 2);
-            ctx.fill();
-            // Eyes (Black)
-            ctx.fillStyle = '#000';
+            ctx.moveTo(32, 20); ctx.lineTo(44, 30);
+            ctx.lineTo(38, 48); ctx.lineTo(26, 48);
+            ctx.lineTo(20, 30); ctx.fill();
+
+            // Ribbed Scales
+            ctx.strokeStyle = '#330066';
+            ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(24, 30); ctx.lineTo(40, 30); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(26, 36); ctx.lineTo(38, 36); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(28, 42); ctx.lineTo(36, 42); ctx.stroke();
+
+            // Head (Xenomorph/Mantis shaped)
+            ctx.fillStyle = '#440088';
             ctx.beginPath();
-            ctx.ellipse(28, 12, 3, 5, 0.2, 0, Math.PI * 2);
-            ctx.ellipse(36, 12, 3, 5, -0.2, 0, Math.PI * 2);
-            ctx.fill();
-            // Body (Slim)
-            ctx.fillStyle = '#880088';
-            ctx.fillRect(24, 24, 16, 20);
-            // Legs
-            ctx.fillStyle = '#660066';
-            ctx.fillRect(24, 44, 6, 20);
-            ctx.fillRect(34, 44, 6, 20);
+            ctx.moveTo(32, 2); ctx.lineTo(42, 10);
+            ctx.lineTo(38, 22); ctx.lineTo(26, 22);
+            ctx.lineTo(22, 10); ctx.fill();
+
+            // Glowing Slanted Eyes
+            ctx.fillStyle = '#00ffcc';
+            ctx.beginPath();
+            ctx.ellipse(27, 14, 4, 8, -Math.PI / 4, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath();
+            ctx.ellipse(37, 14, 4, 8, Math.PI / 4, 0, Math.PI * 2); ctx.fill();
+            // Slit Pupils
+            ctx.fillStyle = '#000000';
+            ctx.beginPath();
+            ctx.ellipse(27, 14, 1, 6, -Math.PI / 4, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath();
+            ctx.ellipse(37, 14, 1, 6, Math.PI / 4, 0, Math.PI * 2); ctx.fill();
+
+            // Reverse-jointed Legs
+            ctx.strokeStyle = '#5500aa';
+            ctx.lineWidth = 4;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            // Left (rear from view)
+            ctx.beginPath(); ctx.moveTo(26, 46); ctx.lineTo(16, 54); ctx.lineTo(20, 64); ctx.stroke();
+            // Right (front from view)
+            ctx.beginPath(); ctx.moveTo(38, 46); ctx.lineTo(48, 54); ctx.lineTo(44, 64); ctx.stroke();
+
+            // Insectoid Arms/Claws
+            // Left arm dangling
+            ctx.beginPath(); ctx.moveTo(22, 26); ctx.lineTo(10, 36); ctx.lineTo(14, 46); ctx.stroke();
+            // Right arm raised
+            ctx.beginPath(); ctx.moveTo(42, 26); ctx.lineTo(54, 18); ctx.lineTo(60, 26); ctx.stroke();
+
+            // Sharp Claws (pinkish/purple)
+            ctx.fillStyle = '#ff00ff';
+            ctx.beginPath(); ctx.moveTo(14, 46); ctx.lineTo(10, 52); ctx.lineTo(18, 52); ctx.fill();
+            ctx.beginPath(); ctx.moveTo(60, 26); ctx.lineTo(64, 18); ctx.lineTo(54, 20); ctx.fill();
         } // End of generateItemTexture
 
         return canvas;
