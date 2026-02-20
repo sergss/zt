@@ -1,22 +1,26 @@
 class Player {
-    constructor(x, y, angle, map) {
+    constructor(x, y, angle, map, config = null) {
         this.x = x;
         this.y = y;
         this.angle = angle;
         this.map = map;
 
-        this.moveSpeed = 3.0; // Units per second
+        // Stats (default from tests/step10 or config from roster)
+        this.hp = config ? config.hp : 50;
+        this.maxHp = config ? config.maxHp : 100;
+        this.armor = config ? config.armor : 25;
+        this.moveSpeed = config ? config.speed : 3.0; // Units per second
         this.rotSpeed = 3.0;  // Radians per second
 
-        // Stats
-        this.hp = 50;
-        this.armor = 25; // Some armor to test hits, but not full so pickups work
+        // Character Info
+        this.name = config ? config.name : 'Unknown';
+        this.portrait = config ? config.portrait : '#aaaaaa';
 
         // Weapon System
         // 7 weapons. All unlocked for testing.
         // 0: Pistol, 1: Shotgun, 2: Assault Rifle, 3: MG, 4: Rocket, 5: Flame, 6: Laser
         this.weapons = [true, true, true, true, true, true, true];
-        this.currentWeaponIndex = 0; // Pistol
+        this.currentWeaponIndex = config ? config.startWeapon : 0; // Pistol
         this.weapon = WEAPONS[this.currentWeaponIndex].name;
 
         this.ammo = {

@@ -29,6 +29,41 @@ class HUD {
         this.drawBars(ctx, player);
         this.drawInfo(ctx, player, enemiesLeft);
         this.drawCompass(ctx, player);
+        this.drawFace(ctx, player);
+    }
+
+    drawFace(ctx, player) {
+        const faceSize = 64;
+        const centerX = this.viewX + this.viewW / 2;
+        const faceX = centerX - faceSize / 2;
+        const faceY = this.viewY + this.viewH + 10; // Bottom panel middle
+
+        // Background / Border
+        ctx.fillStyle = '#333';
+        ctx.fillRect(faceX - 4, faceY - 4, faceSize + 8, faceSize + 8);
+
+        ctx.fillStyle = player.portrait || '#aaaaaa';
+        ctx.fillRect(faceX, faceY, faceSize, faceSize);
+
+        // Simple face drawing
+        ctx.fillStyle = '#000';
+        ctx.fillRect(faceX + 15, faceY + 20, 10, 10); // Left eye
+        ctx.fillRect(faceX + 40, faceY + 20, 10, 10); // Right eye
+
+        if (player.hp < (player.maxHp || 100) * 0.3) {
+            // Sad/hurt mouth
+            ctx.beginPath();
+            ctx.arc(faceX + 32, faceY + 50, 10, Math.PI, 0);
+            ctx.stroke();
+
+            // Blood
+            ctx.fillStyle = '#f00';
+            ctx.fillRect(faceX + 10, faceY + 10, 5, 10);
+            ctx.fillRect(faceX + 45, faceY + 40, 6, 15);
+        } else {
+            // Neutral mouth
+            ctx.fillRect(faceX + 22, faceY + 45, 20, 5);
+        }
     }
 
     drawBars(ctx, player) {
@@ -42,12 +77,12 @@ class HUD {
         ctx.fillStyle = '#000000';
         ctx.fillRect(startX, startY, barWidth, barHeight);
         ctx.fillStyle = '#00aa00';
-        const hpPct = Math.max(0, player.hp / 100);
+        const hpPct = Math.max(0, player.hp / (player.maxHp || 100));
         ctx.fillRect(startX, startY, barWidth * hpPct, barHeight);
 
         ctx.fillStyle = '#ffffff';
         ctx.font = '14px monospace';
-        ctx.fillText(`HEALTH ${player.hp}%`, startX, startY - 5);
+        ctx.fillText(`HEALTH ${player.hp}/${player.maxHp || 100}`, startX, startY - 5);
 
         // Armor Bar
         const armorY = startY + 40;
