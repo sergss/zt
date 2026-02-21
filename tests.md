@@ -261,6 +261,30 @@ function testLevels(T) {
   T.assertEqual(levelMgr.currentLevel, 1, 'Advanced to level 1');
 }
 ```
+## Тесты для ШАГа 16: Автокарта (Automap)
+```javascript
+function testAutomap(T) {
+  // Имитируем небольшую карту 3x3
+  const mapData = [
+    [1, 1, 1],
+    [1, 0, 1],
+    [1, 1, 1]
+  ];
+  const map = new GameMap(mapData);
+  
+  // Проверяем изначальный туман войны
+  T.assertEqual(map.visited[1][1], false, 'Cells start unvisited');
+  
+  // Открываем ячейку
+  map.revealCell(1, 1);
+  T.assertEqual(map.visited[1][1], true, 'Cell becomes visited');
+  
+  // Открываем за границами карты (не должно упасть)
+  map.revealCell(-1, -1);
+  map.revealCell(10, 10);
+  T.assert(true, 'No crash on revealing out-of-bounds cells');
+}
+```
 
 ## Тесты для ШАГа 17: Пароли
 ```javascript

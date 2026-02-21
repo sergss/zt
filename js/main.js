@@ -71,6 +71,7 @@ function startLevel(characterConfig, isNextLevel = false) {
 
 let kiaTimer = 0;
 let levelTimer = 0; // shared timer for transitions
+let showAutomap = false;
 
 function update(dt) {
     if (gameState === 'SELECT_CHARACTER') {
@@ -143,6 +144,11 @@ function update(dt) {
     }
 
     if (gameState === 'PLAYING') {
+        if (Input.isActionActive('map')) {
+            showAutomap = !showAutomap;
+            Input.keys['Tab'] = false; // Debounce
+        }
+
         if (player) {
             player.update(dt);
 
@@ -429,19 +435,23 @@ function draw() {
         const pX = scrollX + playerScreenX;
         const pY = scrollY + playerScreenY;
 
-        ctx.fillStyle = '#ff0000';
+        ctx.fillStyle = '#f00';
         ctx.beginPath();
-        ctx.arc(pX, pY, 4, 0, Math.PI * 2);
+        ctx.arc(pX, pY, 3, 0, Math.PI * 2);
         ctx.fill();
 
-        // Draw Direction
-        ctx.strokeStyle = '#ffff00';
+        ctx.strokeStyle = '#ff0';
         ctx.beginPath();
         ctx.moveTo(pX, pY);
         ctx.lineTo(pX + Math.cos(player.angle) * 10, pY + Math.sin(player.angle) * 10);
         ctx.stroke();
 
         ctx.restore();
+
+        // Step 16: Fullscreen Automap Overlay
+        if (showAutomap && renderer && player && map) {
+            renderer.renderAutomap(player, map);
+        }
     }
 }
 

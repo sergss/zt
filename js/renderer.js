@@ -281,4 +281,61 @@ class Renderer {
             this.ctx.fill();
         }
     }
+
+    renderAutomap(player, map) {
+        // Semi-transparent dark overlay
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        this.ctx.fillRect(0, 0, this.width, this.height);
+
+        // Automap properties
+        const cellSize = 12;
+        const offsetX = (this.width - map.width * cellSize) / 2;
+        const offsetY = (this.height - map.height * cellSize) / 2;
+
+        for (let y = 0; y < map.height; y++) {
+            for (let x = 0; x < map.width; x++) {
+                if (map.visited[y][x]) {
+                    let cell = map.grid[y][x];
+
+                    if (cell === 0) {
+                        this.ctx.fillStyle = '#222'; // Floor
+                    } else if (cell === 5 || cell === 9) {
+                        this.ctx.fillStyle = '#aa0'; // Door
+                    } else if (cell === 8) {
+                        this.ctx.fillStyle = '#0f0'; // Elevator
+                    } else if (cell >= 1 && cell <= 4) {
+                        this.ctx.fillStyle = '#aaa'; // Wall
+                    }
+
+                    if (cell !== 0) {
+                        this.ctx.fillRect(offsetX + x * cellSize, offsetY + y * cellSize, cellSize, cellSize);
+                        // Cell border for structure
+                        this.ctx.strokeStyle = '#111';
+                        this.ctx.strokeRect(offsetX + x * cellSize, offsetY + y * cellSize, cellSize, cellSize);
+                    }
+                }
+            }
+        }
+
+        // Draw Player Marker
+        this.ctx.fillStyle = '#f00';
+        this.ctx.beginPath();
+        const px = offsetX + player.x * cellSize;
+        const py = offsetY + player.y * cellSize;
+
+        // Triangle pointing in `player.angle` direction
+        this.ctx.moveTo(
+            px + Math.cos(player.angle) * 6,
+            py + Math.sin(player.angle) * 6
+        );
+        this.ctx.lineTo(
+            px + Math.cos(player.angle + Math.PI * 0.75) * 4,
+            py + Math.sin(player.angle + Math.PI * 0.75) * 4
+        );
+        this.ctx.lineTo(
+            px + Math.cos(player.angle - Math.PI * 0.75) * 4,
+            py + Math.sin(player.angle - Math.PI * 0.75) * 4
+        );
+        this.ctx.fill();
+    }
 }

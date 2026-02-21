@@ -29,6 +29,8 @@ class GameMap {
         this.height = grid.length;
         this.cellSize = 16;
 
+        this.visited = Array.from({ length: this.height }, () => new Array(this.width).fill(false));
+
         this.doors = []; // List of {x, y, state, offset}
         this.initDoors();
     }
@@ -99,6 +101,12 @@ class GameMap {
     getCell(x, y) {
         if (!this.isInBounds(x, y)) return 0;
         return this.grid[y][x];
+    }
+
+    revealCell(x, y) {
+        if (this.isInBounds(x, y)) {
+            this.visited[y][x] = true;
+        }
     }
 
     isInBounds(x, y) {

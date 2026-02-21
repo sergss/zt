@@ -53,6 +53,10 @@ class Raycaster {
                 dist = sideDistY - deltaDistY;
             }
 
+            // Reveal fog-of-war for Automap
+            this.map.revealCell(Math.floor(posX), Math.floor(posY));
+            this.map.revealCell(mapX, mapY);
+
             // Check if ray has hit a wall or object
             if (this.map.isInBounds(mapX, mapY)) {
                 let type = this.map.getCell(mapX, mapY);
