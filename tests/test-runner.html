@@ -36,6 +36,7 @@
     <script src="../js/textures.js"></script>
     <script src="../js/renderer.js"></script>
     <script src="../js/levels.js"></script>
+    <script src="../js/password.js"></script>
     <!-- Note: main.js starts the game loop automatically, which might be undesirable for tests. 
          We might need to refactor main.js to only start if not testing, or just use what we need. 
          For Step 1 testing, we just need config and checking the canvas. -->
@@ -59,6 +60,7 @@
     <script src="test-step14.js"></script>
     <script src="test-step15.js"></script>
     <script src="test-step16.js"></script>
+    <script src="test-step17.js"></script>
 
     <script>
         // Run specific tests based on what's available
@@ -78,6 +80,7 @@
         if (window.testStep14) testStep14(TestRunner);
         if (window.testStep15) testStep15(TestRunner);
         if (window.testStep16) testStep16(TestRunner);
+        if (window.testStep17) testStep17(TestRunner);
 
         TestRunner.run();
     </script>
