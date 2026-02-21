@@ -82,6 +82,7 @@ class GameMap {
         const door = this.getDoor(x, y);
         if (door && (door.state === 'CLOSED' || door.state === 'CLOSING')) {
             door.state = 'OPENING';
+            if (typeof AudioSystem !== 'undefined') AudioSystem.playDoorOpen();
         }
     }
 

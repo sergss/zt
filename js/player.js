@@ -53,6 +53,7 @@ class Player {
         }
 
         this.damageFlash = 0.3; // 0.3 seconds of red flash
+        if (typeof AudioSystem !== 'undefined') AudioSystem.playPlayerDamage();
     }
 
     switchWeapon(index) {
@@ -81,6 +82,7 @@ class Player {
             }
             this.lastShotTime = time;
             this.shootTimer = 0.2; // Flash duration
+            if (typeof AudioSystem !== 'undefined') AudioSystem.playShoot(weaponProto.name);
             return true;
         }
         return false;

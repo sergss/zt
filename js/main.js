@@ -157,6 +157,7 @@ function update(dt) {
             Input.keys['KeyS'] = false; Input.keys['ArrowDown'] = false;
         }
         if (Input.isActionActive('shoot')) {
+            if (typeof AudioSystem !== 'undefined') AudioSystem.init();
             if (menuSelectedIndex === 0) {
                 gameState = 'SELECT_CHARACTER';
                 levelManager.currentLevel = 0;
@@ -380,6 +381,7 @@ function update(dt) {
             if (map.grid[Math.floor(player.y - checkDist)] && map.grid[Math.floor(player.y - checkDist)][Math.floor(player.x)] === 8) nearElevator = true;
 
             if (nearElevator && levelManager.isElevatorActive()) {
+                if (typeof AudioSystem !== 'undefined') AudioSystem.playElevator();
                 gameState = 'LEVEL_COMPLETE';
                 const aliveStates = roster.characters.map(c => c.alive);
                 let charIndex = roster.characters.findIndex(c => c.name === player.name);
@@ -472,6 +474,7 @@ function update(dt) {
                     sprite.updateDistance(player);
                     if (sprite.checkPickup(player)) {
                         console.log('Picked up:', sprite.type);
+                        if (typeof AudioSystem !== 'undefined') AudioSystem.playItemPickup();
                     }
                 }
             }

@@ -132,10 +132,12 @@ class Enemy extends Sprite {
             this.sprite = 'enemyDead';
             this.textureId = this.sprite;
             console.log(this.type + ' died');
+            if (typeof AudioSystem !== 'undefined') AudioSystem.playEnemyDeath(this.distance, this.type);
         } else {
             console.log(this.type + ' hit, HP:', this.hp);
             this.state = 'PAIN';
             this.painTimer = 0.3; // 0.3s stagger
+            if (typeof AudioSystem !== 'undefined') AudioSystem.playHit(this.distance);
         }
     }
 }
