@@ -69,9 +69,10 @@ class Enemy extends Sprite {
 
         // Step 13: Enemy AI
         if (this.state === 'IDLE') {
-            if (this.checkLineOfSight(player, map)) {
-                this.state = 'CHASE';
-                this.attackTimer = 1.0; // 1 second reaction time before first attack
+            let dist = Math.hypot(player.x - this.x, player.y - this.y);
+            // Passive detection: player must be relatively close (6.0 units) and visible
+            if (dist < 6.0 && this.checkLineOfSight(player, map)) {
+                this.alert();
             }
         }
 
@@ -125,6 +126,13 @@ class Enemy extends Sprite {
         this.textureId = this.sprite;
     }
 
+    alert() {
+        if (this.state === 'IDLE' && this.hp > 0) {
+            this.state = 'CHASE';
+            this.attackTimer = 1.0; // Reaction time before first attack
+        }
+    }
+
     checkLineOfSight(player, map) {
         if (!map) return false;
         let dx = player.x - this.x;
@@ -153,6 +161,7 @@ class Enemy extends Sprite {
 
     takeDamage(amount) {
         if (this.state === 'DEAD') return;
+        this.alert();
         this.hp -= amount;
         if (this.hp <= 0) {
             this.hp = 0;

@@ -423,6 +423,16 @@ function update(dt) {
                 // 1. Try to shoot weapon
                 if (player.shoot(Date.now() / 1000)) {
                     // Shot fired successfully
+                    // Alert enemies in a wide radius due to weapon sound
+                    enemies.forEach(enemy => {
+                        if (enemy.hp <= 0) return;
+                        let dist = Math.hypot(enemy.x - player.x, enemy.y - player.y);
+                        // Sound travels further than vision in fog (e.g. 20 units)
+                        if (dist < 20.0 && enemy.checkLineOfSight(player, map)) {
+                            enemy.alert();
+                        }
+                    });
+
                     const weaponProto = WEAPONS[player.currentWeaponIndex];
 
                     for (let s = 0; s < (weaponProto.count || 1); s++) {
