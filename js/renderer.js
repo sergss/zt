@@ -219,6 +219,102 @@ class Renderer {
         }
     }
 
+    renderProjectiles(player, projectiles) {
+        projectiles.forEach(proj => {
+            if (!proj.active) return;
+
+            let dx = proj.x - player.x;
+            let dy = proj.y - player.y;
+            let dist = Math.hypot(dx, dy);
+
+            let projAngle = Math.atan2(dy, dx) - player.angle;
+            while (projAngle < -Math.PI) projAngle += Math.PI * 2;
+            while (projAngle > Math.PI) projAngle -= Math.PI * 2;
+
+            if (Math.abs(projAngle) < (this.fov / 2) + 0.2) {
+                let perpDist = dist * Math.cos(projAngle);
+                if (perpDist <= 0.2) return;
+
+                let screenX = this.x + (0.5 * (1 + projAngle / (this.fov / 2))) * this.width;
+                let screenY = this.y + (this.height / 2) + ((0.5 - proj.z) * this.height) / perpDist;
+
+                if (proj.type === 'laser') {
+                    // Draw a beam from player to the hit point
+                    // We can just draw a bright vertical line at the destination and maybe a line to it
+                    let size = this.height / perpDist;
+                    this.ctx.fillStyle = '#0ff';
+                    this.ctx.fillRect(screenX - size * 0.1, screenY - size / 2, size * 0.2, size);
+                } else if (proj.type === 'rocket') {
+                    let size = (this.height / perpDist) * 0.4;
+                    this.ctx.fillStyle = '#666';
+                    this.ctx.fillRect(screenX - size / 2, screenY - size / 2, size, size);
+                    this.ctx.fillStyle = '#f80'; // flame
+                    this.ctx.fillRect(screenX - size / 4, screenY + size / 2, size / 2, size / 2);
+                } else if (proj.type === 'fire') {
+                    let size = (this.height / perpDist) * 0.8;
+                    this.ctx.fillStyle = 'rgba(255, 100, 0, 0.8)';
+                    this.ctx.beginPath();
+                    this.ctx.arc(screenX, screenY, size / 2, 0, Math.PI * 2);
+                    this.ctx.fill();
+                } else {
+                    // generic bullet tracer
+                    let size = (this.height / perpDist) * 0.1;
+                    this.ctx.fillStyle = '#ff0';
+                    this.ctx.fillRect(screenX - size / 2, screenY - size / 2, size, size * 2);
+                }
+            }
+        });
+    }
+
+    renderParticles(player, particles) {
+        particles.forEach(part => {
+            if (!part.active) return;
+
+            let dx = part.x - player.x;
+            let dy = part.y - player.y;
+            let dist = Math.hypot(dx, dy);
+
+            let partAngle = Math.atan2(dy, dx) - player.angle;
+            while (partAngle < -Math.PI) partAngle += Math.PI * 2;
+            while (partAngle > Math.PI) partAngle -= Math.PI * 2;
+
+            if (Math.abs(partAngle) < (this.fov / 2) + 0.2) {
+                let perpDist = dist * Math.cos(partAngle);
+                if (perpDist <= 0.2) return;
+
+                let screenX = this.x + (0.5 * (1 + partAngle / (this.fov / 2))) * this.width;
+                let screenY = this.y + (this.height / 2) + ((0.5 - part.z) * this.height) / perpDist;
+                let size = (this.height / perpDist);
+
+                if (part.type === 'explosion') {
+                    size *= 1.5;
+                    let alpha = part.life / part.maxLife;
+                    this.ctx.fillStyle = `rgba(255, ${Math.floor(255 * alpha)}, 0, ${alpha})`;
+                    this.ctx.beginPath();
+                    this.ctx.arc(screenX, screenY, size / 2, 0, Math.PI * 2);
+                    this.ctx.fill();
+
+                    this.ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+                    this.ctx.beginPath();
+                    this.ctx.arc(screenX, screenY, size / 4, 0, Math.PI * 2);
+                    this.ctx.fill();
+                } else if (part.type === 'firePatch') {
+                    // Renders flat on the floor usually
+                    size *= Math.random() * 0.5 + 0.8; // flicker
+                    let bottomY = screenY + Math.abs(this.height / perpDist) / 2;
+                    let alpha = (part.life / part.maxLife) * 0.8;
+                    this.ctx.fillStyle = `rgba(255, ${Math.floor(Math.random() * 150)}, 0, ${alpha})`;
+                    this.ctx.beginPath();
+                    // Draw flame cone upwards from the floor
+                    this.ctx.moveTo(screenX, bottomY);
+                    this.ctx.lineTo(screenX - size / 2, bottomY - size);
+                    this.ctx.lineTo(screenX + size / 2, bottomY - size);
+                    this.ctx.fill();
+                }
+            }
+        });
+    }
+
     darkenColor(hex, factor) {
         // Simple hex darken
         let r = parseInt(hex.substr(1, 2), 16);
@@ -240,81 +336,176 @@ class Renderer {
     }
 
     _renderWeaponImpl(player) {
-        // Paste the content from previous read or step
         const centerX = this.x + this.width / 2;
         const bottomY = this.y + this.height;
         let recoilY = 0;
         if (player.shootTimer > 0) {
             recoilY = Math.sin(player.shootTimer * Math.PI * 5) * 20;
         }
-        this.ctx.fillStyle = '#444';
+
         const idx = player.currentWeaponIndex;
+        let muzzleY = bottomY - 100 + recoilY; // Default fallback
+
+        this.ctx.fillStyle = '#444';
 
         if (idx === 0) { // Pistol
+            // Base
             this.ctx.fillStyle = '#333';
-            this.ctx.fillRect(centerX - 10, bottomY - 100 + recoilY, 20, 100);
+            this.ctx.beginPath();
+            this.ctx.moveTo(centerX - 30, bottomY);
+            this.ctx.lineTo(centerX + 30, bottomY);
+            this.ctx.lineTo(centerX + 15, bottomY - 50 + recoilY);
+            this.ctx.lineTo(centerX - 15, bottomY - 50 + recoilY);
+            this.ctx.fill();
+            // Barrel highlight
             this.ctx.fillStyle = '#111';
-            this.ctx.fillRect(centerX - 5, bottomY - 100 + recoilY, 10, 100);
+            this.ctx.beginPath();
+            this.ctx.moveTo(centerX - 15, bottomY - 50 + recoilY);
+            this.ctx.lineTo(centerX + 15, bottomY - 50 + recoilY);
+            this.ctx.lineTo(centerX + 8, bottomY - 60 + recoilY);
+            this.ctx.lineTo(centerX - 8, bottomY - 60 + recoilY);
+            this.ctx.fill();
+            muzzleY = bottomY - 60 + recoilY;
         }
-        else if (idx === 1) { // Shotgun
-            this.ctx.fillStyle = '#222';
-            this.ctx.fillRect(centerX - 25, bottomY - 80 + recoilY, 20, 80);
-            this.ctx.fillRect(centerX + 5, bottomY - 80 + recoilY, 20, 80);
-            this.ctx.fillStyle = '#533';
-            this.ctx.fillRect(centerX - 15, bottomY - 60 + recoilY, 30, 60);
+        else if (idx === 1) { // Shotgun (Double Barrel)
+            this.ctx.fillStyle = '#321'; // wooden stock
+            this.ctx.beginPath();
+            this.ctx.moveTo(centerX - 40, bottomY);
+            this.ctx.lineTo(centerX + 40, bottomY);
+            this.ctx.lineTo(centerX + 20, bottomY - 30 + recoilY);
+            this.ctx.lineTo(centerX - 20, bottomY - 30 + recoilY);
+            this.ctx.fill();
+
+            this.ctx.fillStyle = '#222'; // barrels
+            // left barrel
+            this.ctx.beginPath();
+            this.ctx.moveTo(centerX - 20, bottomY - 30 + recoilY);
+            this.ctx.lineTo(centerX - 2, bottomY - 30 + recoilY);
+            this.ctx.lineTo(centerX - 2, bottomY - 70 + recoilY);
+            this.ctx.lineTo(centerX - 12, bottomY - 70 + recoilY);
+            this.ctx.fill();
+            // right barrel
+            this.ctx.beginPath();
+            this.ctx.moveTo(centerX + 2, bottomY - 30 + recoilY);
+            this.ctx.lineTo(centerX + 20, bottomY - 30 + recoilY);
+            this.ctx.lineTo(centerX + 12, bottomY - 70 + recoilY);
+            this.ctx.lineTo(centerX + 2, bottomY - 70 + recoilY);
+            this.ctx.fill();
+            muzzleY = bottomY - 70 + recoilY;
         }
         else if (idx === 2) { // Assault Rifle
-            this.ctx.fillStyle = '#444';
-            this.ctx.fillRect(centerX - 15, bottomY - 90 + recoilY, 30, 90);
-            this.ctx.fillStyle = '#000';
-            this.ctx.fillRect(centerX - 5, bottomY - 120 + recoilY, 10, 120);
+            this.ctx.fillStyle = '#222';
+            this.ctx.beginPath();
+            this.ctx.moveTo(centerX - 35, bottomY);
+            this.ctx.lineTo(centerX + 35, bottomY);
+            this.ctx.lineTo(centerX + 15, bottomY - 45 + recoilY);
+            this.ctx.lineTo(centerX - 15, bottomY - 45 + recoilY);
+            this.ctx.fill();
+
+            this.ctx.fillStyle = '#111';
+            this.ctx.beginPath();
+            this.ctx.moveTo(centerX - 15, bottomY - 45 + recoilY);
+            this.ctx.lineTo(centerX + 15, bottomY - 45 + recoilY);
+            this.ctx.lineTo(centerX + 6, bottomY - 80 + recoilY);
+            this.ctx.lineTo(centerX - 6, bottomY - 80 + recoilY);
+            this.ctx.fill();
+            muzzleY = bottomY - 80 + recoilY;
         }
         else if (idx === 3) { // Machinegun
-            this.ctx.fillStyle = '#222';
-            // Barrels
-            this.ctx.fillRect(centerX - 20, bottomY - 100 + recoilY, 10, 100);
-            this.ctx.fillRect(centerX + 10, bottomY - 100 + recoilY, 10, 100);
-            this.ctx.fillStyle = '#444';
-            this.ctx.fillRect(centerX - 25, bottomY - 60 + recoilY, 50, 60);
+            this.ctx.fillStyle = '#333';
+            this.ctx.beginPath();
+            this.ctx.moveTo(centerX - 50, bottomY);
+            this.ctx.lineTo(centerX + 50, bottomY);
+            this.ctx.lineTo(centerX + 25, bottomY - 30 + recoilY);
+            this.ctx.lineTo(centerX - 25, bottomY - 30 + recoilY);
+            this.ctx.fill();
+
+            // Twin barrels
+            this.ctx.fillStyle = '#111';
+            this.ctx.beginPath();
+            this.ctx.moveTo(centerX - 25, bottomY - 30 + recoilY);
+            this.ctx.lineTo(centerX - 5, bottomY - 30 + recoilY);
+            this.ctx.lineTo(centerX - 8, bottomY - 75 + recoilY);
+            this.ctx.lineTo(centerX - 18, bottomY - 75 + recoilY);
+            this.ctx.fill();
+
+            this.ctx.beginPath();
+            this.ctx.moveTo(centerX + 5, bottomY - 30 + recoilY);
+            this.ctx.lineTo(centerX + 25, bottomY - 30 + recoilY);
+            this.ctx.lineTo(centerX + 18, bottomY - 75 + recoilY);
+            this.ctx.lineTo(centerX + 8, bottomY - 75 + recoilY);
+            this.ctx.fill();
+            muzzleY = bottomY - 75 + recoilY;
         }
         else if (idx === 4) { // Rocket Launcher
-            this.ctx.fillStyle = '#343';
-            this.ctx.fillRect(centerX - 20, bottomY - 110 + recoilY, 40, 110);
-            this.ctx.fillStyle = '#121';
+            this.ctx.fillStyle = '#232';
             this.ctx.beginPath();
-            this.ctx.arc(centerX, bottomY - 110 + recoilY, 15, 0, Math.PI * 2);
+            this.ctx.moveTo(centerX - 40, bottomY);
+            this.ctx.lineTo(centerX + 40, bottomY);
+            this.ctx.lineTo(centerX + 25, bottomY - 60 + recoilY);
+            this.ctx.lineTo(centerX - 25, bottomY - 60 + recoilY);
             this.ctx.fill();
+            // Hole
+            this.ctx.fillStyle = '#010';
+            this.ctx.beginPath();
+            this.ctx.ellipse(centerX, bottomY - 60 + recoilY, 20, 8, 0, 0, Math.PI * 2);
+            this.ctx.fill();
+            muzzleY = bottomY - 60 + recoilY;
         }
         else if (idx === 5) { // Flamethrower
             this.ctx.fillStyle = '#a40';
-            this.ctx.fillRect(centerX - 15, bottomY - 100 + recoilY, 30, 100);
-            this.ctx.fillStyle = '#f80'; // Pilot light
-            this.ctx.fillRect(centerX - 2, bottomY - 105 + recoilY, 4, 10);
+            this.ctx.beginPath();
+            this.ctx.moveTo(centerX - 35, bottomY);
+            this.ctx.lineTo(centerX + 35, bottomY);
+            this.ctx.lineTo(centerX + 20, bottomY - 50 + recoilY);
+            this.ctx.lineTo(centerX - 20, bottomY - 50 + recoilY);
+            this.ctx.fill();
+            // Pilot light
+            this.ctx.fillStyle = '#f80';
+            this.ctx.beginPath();
+            this.ctx.arc(centerX, bottomY - 52 + recoilY, 6, 0, Math.PI * 2);
+            this.ctx.fill();
+            muzzleY = bottomY - 52 + recoilY;
         }
         else if (idx === 6) { // Laser
-            this.ctx.fillStyle = '#ddd';
-            this.ctx.fillRect(centerX - 20, bottomY - 100 + recoilY, 40, 100);
-            this.ctx.fillStyle = '#00f'; // Blue glow
-            this.ctx.fillRect(centerX - 5, bottomY - 100 + recoilY, 10, 100);
-            this.ctx.strokeStyle = '#0ff';
-            this.ctx.lineWidth = 2;
-            this.ctx.strokeRect(centerX - 5, bottomY - 100 + recoilY, 10, 100);
-        }
-        else {
-            // Default
-            this.ctx.fillStyle = '#555';
-            this.ctx.fillRect(centerX - 30, bottomY - 90 + recoilY, 60, 90);
+            this.ctx.fillStyle = '#ccc';
+            this.ctx.beginPath();
+            this.ctx.moveTo(centerX - 40, bottomY);
+            this.ctx.lineTo(centerX + 40, bottomY);
+            this.ctx.lineTo(centerX + 15, bottomY - 55 + recoilY);
+            this.ctx.lineTo(centerX - 15, bottomY - 55 + recoilY);
+            this.ctx.fill();
+            // Blue energy core
+            this.ctx.fillStyle = '#00f';
+            this.ctx.beginPath();
+            this.ctx.moveTo(centerX - 10, bottomY);
+            this.ctx.lineTo(centerX + 10, bottomY);
+            this.ctx.lineTo(centerX + 4, bottomY - 55 + recoilY);
+            this.ctx.lineTo(centerX - 4, bottomY - 55 + recoilY);
+            this.ctx.fill();
+            muzzleY = bottomY - 55 + recoilY;
         }
 
         if (player.shootTimer > 0.05) {
             const flashSize = 40 + Math.random() * 20;
-            this.ctx.fillStyle = `rgba(255, 255, 0, ${player.shootTimer * 5})`;
+            let outerColor = `rgba(255, 255, 0, ${player.shootTimer * 5})`;
+            let innerColor = `rgba(255, 255, 255, ${player.shootTimer * 5})`;
+
+            if (idx === 5) { // Flame color
+                outerColor = `rgba(255, 100, 0, ${player.shootTimer * 5})`;
+                innerColor = `rgba(255, 200, 0, ${player.shootTimer * 5})`;
+            } else if (idx === 6) { // Laser color
+                outerColor = `rgba(0, 100, 255, ${player.shootTimer * 5})`;
+                innerColor = `rgba(150, 200, 255, ${player.shootTimer * 5})`;
+            }
+
+            this.ctx.fillStyle = outerColor;
             this.ctx.beginPath();
-            this.ctx.arc(centerX, bottomY - 100 + recoilY, flashSize, 0, Math.PI * 2);
+            this.ctx.arc(centerX, muzzleY, flashSize, 0, Math.PI * 2);
             this.ctx.fill();
-            this.ctx.fillStyle = `rgba(255, 255, 255, ${player.shootTimer * 5})`;
+            this.ctx.fillStyle = innerColor;
             this.ctx.beginPath();
-            this.ctx.arc(centerX, bottomY - 100 + recoilY, flashSize * 0.6, 0, Math.PI * 2);
+            this.ctx.arc(centerX, muzzleY, flashSize * 0.6, 0, Math.PI * 2);
             this.ctx.fill();
         }
     }

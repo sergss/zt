@@ -204,4 +204,10 @@ class AudioSystem {
         this.playTone(60, 'sawtooth', 0.2, 0.8);
         this.playNoise(0.2, 0.6);
     }
+
+    static playExplosion(dist) {
+        if (!this.initialized) this.init();
+        this.playTone(40, 'square', 0.8, 0.7, dist);
+        this.playNoise(1.0, 0.9, dist);
+    }
 }

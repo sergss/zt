@@ -149,6 +149,8 @@ let kiaTimer = 0;
 let levelTimer = 0; // shared timer for transitions
 let levelFadeTimer = 0;
 let showAutomap = false;
+let projectiles = [];
+let particles = [];
 
 function update(dt) {
     if (levelFadeTimer > 0) {
@@ -434,42 +436,15 @@ function update(dt) {
                     });
 
                     const weaponProto = WEAPONS[player.currentWeaponIndex];
+                    let wType = weaponProto.ammoType; // Used roughly as type identifier, but we use names
+                    let projType = 'bullet';
+                    if (wType === 'rockets') projType = 'rocket';
+                    if (wType === 'fuel') projType = 'fire';
+                    if (wType === 'cells') projType = 'laser';
 
                     for (let s = 0; s < (weaponProto.count || 1); s++) {
                         let shootAngle = player.angle + (Math.random() - 0.5) * weaponProto.spread;
-                        let rayHit = raycaster.castRay(player.x, player.y, shootAngle);
-                        let wallDist = rayHit ? rayHit.distance : weaponProto.range;
-
-                        let closestEnemy = null;
-                        let closestDist = Math.min(weaponProto.range, wallDist);
-
-                        enemies.forEach(enemy => {
-                            if (enemy.hp <= 0) return;
-
-                            const dx = enemy.x - player.x;
-                            const dy = enemy.y - player.y;
-                            const dist = Math.hypot(dx, dy);
-
-                            if (dist < closestDist) {
-                                let angleToEnemy = Math.atan2(dy, dx);
-                                let diff = angleToEnemy - shootAngle;
-
-                                while (diff > Math.PI) diff -= Math.PI * 2;
-                                while (diff < -Math.PI) diff += Math.PI * 2;
-
-                                // The enemy is approx 0.8 units wide. angular width ~= 0.4 / dist. 
-                                let hitAngle = 0.4 / Math.max(0.5, dist);
-
-                                if (Math.abs(diff) < hitAngle) {
-                                    closestEnemy = enemy;
-                                    closestDist = dist;
-                                }
-                            }
-                        });
-
-                        if (closestEnemy) {
-                            closestEnemy.takeDamage(weaponProto.damage);
-                        }
+                        projectiles.push(new Projectile(player.x, player.y, shootAngle, projType, weaponProto.damage, 'player'));
                     }
 
                     const dist = 1.0;
@@ -512,6 +487,20 @@ function update(dt) {
         enemies.forEach(enemy => {
             enemy.update(dt, player, map);
         });
+
+        // Update Projectiles
+        for (let i = projectiles.length - 1; i >= 0; i--) {
+            let proj = projectiles[i];
+            proj.update(dt, map, enemies, particles);
+            if (!proj.active) projectiles.splice(i, 1);
+        }
+
+        // Update Particles
+        for (let i = particles.length - 1; i >= 0; i--) {
+            let part = particles[i];
+            part.update(dt, player, enemies);
+            if (!part.active) particles.splice(i, 1);
+        }
     }
 }
 
@@ -781,6 +770,9 @@ function draw() {
             // We combine them for correct Z-sorting
             const allSprites = sprites.concat(enemies);
             renderer.renderSprites(player, allSprites, textureManager);
+
+            renderer.renderParticles(player, particles);
+            renderer.renderProjectiles(player, projectiles);
 
             renderer.renderWeapon(player);
         }
