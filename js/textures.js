@@ -2,6 +2,7 @@ class TextureManager {
     constructor() {
         this.textures = {};
         this.size = 64; // Texture size
+        this.currentChapter = 0;
         this.initTextures();
     }
 
@@ -20,8 +21,8 @@ class TextureManager {
             'ammo', 'ammoBullets', 'ammoShells', 'ammoBelt', 'ammoRockets', 'ammoFuel', 'ammoCells',
             'weaponShotgun', 'weaponAssaultRifle', 'weaponMachinegun', 'weaponRocketLauncher', 'weaponFlamethrower', 'weaponLaser',
             'guard', 'enemyDead', // Keep legacy for tests if any
-            'zombie', 'soldier', 'alien',
-            'guardAttack', 'zombieAttack', 'soldierAttack', 'alienAttack'
+            'zombie', 'soldier', 'alien', 'boss',
+            'guardAttack', 'zombieAttack', 'soldierAttack', 'alienAttack', 'bossAttack'
         ];
         items.forEach(type => {
             this.textures[type] = this.generateTexture(type);
@@ -34,8 +35,8 @@ class TextureManager {
             'ammoBullets', 'ammoShells', 'ammoBelt', 'ammoRockets', 'ammoFuel', 'ammoCells',
             'weaponShotgun', 'weaponAssaultRifle', 'weaponMachinegun', 'weaponRocketLauncher', 'weaponFlamethrower', 'weaponLaser',
             'guard', 'enemyDead',
-            'zombie', 'soldier', 'alien',
-            'guardAttack', 'zombieAttack', 'soldierAttack', 'alienAttack'
+            'zombie', 'soldier', 'alien', 'boss',
+            'guardAttack', 'zombieAttack', 'soldierAttack', 'alienAttack', 'bossAttack'
         ].includes(type)) {
             return this.generateItemTexture(type);
         }
@@ -130,6 +131,13 @@ class TextureManager {
     ctx.fillRect(10, 20, 12, 24); // Left panel
     ctx.fillRect(42, 20, 12, 24); // Right panel
 }
+
+        if (this.currentChapter > 0 && ['metal', 'bricks', 'tech', 'concrete', 'door'].includes(type)) {
+            ctx.fillStyle = this.currentChapter === 1 ? 'rgba(255, 0, 0, 0.2)' : 'rgba(0, 0, 255, 0.2)';
+            ctx.globalCompositeOperation = 'multiply';
+            ctx.fillRect(0, 0, this.size, this.size);
+            ctx.globalCompositeOperation = 'source-over';
+        }
 
 return canvas;
     }
@@ -924,9 +932,42 @@ return canvas;
             ctx.fillStyle = 'rgba(200, 255, 200, 0.5)';
             ctx.fillRect(cx - 4, 25, 1, 4); ctx.fillRect(cx + 2, 24, 1, 6);
         }
+        else if (type === 'boss' || type === 'bossAttack') {
+            // Boss: Huge menacing robotic / cybernetic enemy
+            ctx.fillStyle = '#550000';
+            ctx.fillRect(8, 8, 48, 56);
+            ctx.fillStyle = '#222222';
+            ctx.fillRect(12, 12, 40, 20); // visor logic
+            ctx.fillStyle = '#ff0000';
+            ctx.fillRect(16, 16, 32, 12); // red glowing eye strip
+            
+            // Arms
+            ctx.fillStyle = '#888888';
+            ctx.fillRect(2, 20, 6, 30);
+            ctx.fillRect(56, 20, 6, 30);
+
+            if (type === 'bossAttack') {
+                ctx.fillStyle = '#ffff00';
+                ctx.beginPath(); ctx.arc(5, 50, 15, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath(); ctx.arc(59, 50, 15, 0, Math.PI * 2); ctx.fill();
+            }
+        }
 
         return canvas;
     } // End of generateItemTexture
+
+
+    loadChapterPalette(chapterIndex) {
+        if (this.currentChapter === chapterIndex) return;
+        this.currentChapter = chapterIndex;
+        
+        // Regenerate environment textures
+        this.textures[1] = this.generateTexture('metal');
+        this.textures[2] = this.generateTexture('bricks');
+        this.textures[3] = this.generateTexture('tech');
+        this.textures[4] = this.generateTexture('concrete');
+        this.textures[5] = this.generateTexture('door');
+    }
 
     getTexture(id) {
         return this.textures[id];

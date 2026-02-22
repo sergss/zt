@@ -123,9 +123,13 @@ function startLevel(characterConfig, isNextLevel = false) {
         }
     }
 
+    // Determine chapter (0-2 = 0, 3-5 = 1, 6-8 = 2)
+    const chapterIndex = Math.floor(levelManager.currentLevel / 3);
+    textureManager.loadChapterPalette(chapterIndex);
+
     // Step 10: Sprites - Placing all types for verification
     sprites = levelManager.getCurrentLevelData().items.map(item => {
-        return new Sprite(item.x, item.y, item.type);
+        return new Item(item.x, item.y, item.type);
     });
     sprites.forEach(s => s.visible = true);
 
@@ -472,7 +476,7 @@ function update(dt) {
                 const sprite = sprites[i];
                 if (sprite.active) {
                     sprite.updateDistance(player);
-                    if (sprite.checkPickup(player)) {
+                    if (sprite instanceof Item && sprite.checkPickup(player)) {
                         console.log('Picked up:', sprite.type);
                         if (typeof AudioSystem !== 'undefined') AudioSystem.playItemPickup();
                     }

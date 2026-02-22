@@ -5,13 +5,34 @@ class Enemy extends Sprite {
         // Ensure strict adherence to Step 11 properties
         this.x = x;
         this.y = y;
-        this.hp = 100;
-        this.type = type; // zombie, soldier, alien
+        this.type = type; // zombie, soldier, alien, boss
         this.state = 'IDLE'; // IDLE as requested
         this.sprite = type; // The texture ID is used as the sprite name
         this.textureId = this.sprite; // Mapper for the renderer
 
-        this.speed = 2.0;
+        // Set stats based on type
+        switch (type) {
+            case 'zombie':
+                this.hp = 50;
+                this.speed = 1.5;
+                break;
+            case 'soldier':
+                this.hp = 100;
+                this.speed = 2.0;
+                break;
+            case 'alien':
+                this.hp = 150;
+                this.speed = 2.5;
+                break;
+            case 'boss':
+                this.hp = 1000;
+                this.speed = 3.2;
+                break;
+            default:
+                this.hp = 100;
+                this.speed = 2.0;
+        }
+
         this.active = true;
         this.visible = true; // Make sure they are visible for renderer
 
@@ -68,7 +89,13 @@ class Enemy extends Sprite {
 
             if (this.state === 'ATTACK') {
                 if (this.attackTimer <= 0) {
-                    let damage = Math.floor(Math.random() * 5) + 5; // 5 to 9 damage
+                    let baseDamage = 5;
+                    let maxDamage = 9;
+                    if (this.type === 'soldier') { baseDamage = 10; maxDamage = 19; }
+                    else if (this.type === 'alien') { baseDamage = 15; maxDamage = 29; }
+                    else if (this.type === 'boss') { baseDamage = 25; maxDamage = 45; }
+
+                    let damage = Math.floor(Math.random() * (maxDamage - baseDamage + 1)) + baseDamage;
                     if (player.takeDamage) player.takeDamage(damage);
                     this.attackTimer = 1.0; // 1 attack per second
                 }
