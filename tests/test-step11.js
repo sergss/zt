@@ -11,7 +11,7 @@ function testStep11(T) {
     // Check required properties for Step 11
     T.assertEqual(e.x, enemyX, 'Enemy X coordinate matches');
     T.assertEqual(e.y, enemyY, 'Enemy Y coordinate matches');
-    T.assertEqual(e.hp, 100, 'Enemy starts with 100 HP');
+    T.assertEqual(e.hp, 150, 'Alien starts with 150 HP');
     T.assertEqual(e.type, enemyType, 'Enemy type matches');
     T.assertEqual(e.state, 'IDLE', 'Enemy initial state is IDLE');
     T.assertEqual(e.sprite, enemyType, 'Enemy sprite maps to texture ID');
