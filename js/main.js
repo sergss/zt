@@ -137,6 +137,19 @@ function init() {
         }
     }, { passive: false });
 
+    const btnFullscreen = document.getElementById('btn-fullscreen');
+    if (btnFullscreen) {
+        btnFullscreen.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch((err) => {
+                    console.log(`Error attempting to enable fullscreen: ${err.message} (${err.name})`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        });
+    }
+
     requestAnimationFrame(gameLoop);
 }
 
