@@ -71,6 +71,7 @@ class Enemy extends Sprite {
         if (this.state === 'IDLE') {
             if (this.checkLineOfSight(player, map)) {
                 this.state = 'CHASE';
+                this.attackTimer = 1.0; // 1 second reaction time before first attack
             }
         }
 
