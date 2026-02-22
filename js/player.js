@@ -113,6 +113,19 @@ class Player {
         let newX = this.x;
         let newY = this.y;
 
+        // Weapon Cycle from Mobile button
+        if (Input.isDown('WeaponCycle')) {
+            Input.keys['WeaponCycle'] = false; // consume
+            let limit = 7;
+            for (let i = 1; i <= limit; i++) {
+                let nextIdx = (this.currentWeaponIndex + i) % limit;
+                if (this.weapons[nextIdx]) {
+                    this.switchWeapon(nextIdx);
+                    break;
+                }
+            }
+        }
+
         // Forward/Backward
         if (Input.isActionActive('forward')) {
             newX += Math.cos(this.angle) * moveStep;
@@ -138,6 +151,8 @@ class Player {
     }
 
     handleCollision(targetX, targetY) {
+        if (!this.map) return; // Prevent crashes in tests or menus before map loads
+
         // Check X axis movement
         if (!this.map.isWall(Math.floor(targetX + Math.sign(targetX - this.x) * this.radius), Math.floor(this.y)) &&
             !this.map.isWall(Math.floor(targetX + Math.sign(targetX - this.x) * this.radius), Math.floor(this.y - this.radius)) &&

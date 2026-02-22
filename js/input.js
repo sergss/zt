@@ -15,7 +15,8 @@ const Input = {
         weapon4: ['Digit4'],
         weapon5: ['Digit5'],
         weapon6: ['Digit6'],
-        weapon7: ['Digit7']
+        weapon7: ['Digit7'],
+        weaponCycle: ['WeaponCycle']
     },
 
     init() {
@@ -29,6 +30,32 @@ const Input = {
 
         window.addEventListener('keyup', (e) => {
             this.keys[e.code] = false;
+        });
+
+        // Mobile Touch Controls
+        const buttons = document.querySelectorAll('.btn');
+        buttons.forEach(btn => {
+            btn.addEventListener('touchstart', (e) => {
+                e.preventDefault(); // prevent mouse emulation click
+                let key = btn.getAttribute('data-key');
+                if (key === 'WeaponCycle') {
+                    // We handle weapon cycle directly since it's not a holding action
+                    // But we still set it so update loop can process it once
+                    this.keys[key] = true;
+                } else {
+                    this.keys[key] = true;
+                }
+            }, { passive: false });
+
+            // Handle touch end AND touch cancel (finger moved away)
+            const release = (e) => {
+                e.preventDefault();
+                let key = btn.getAttribute('data-key');
+                this.keys[key] = false;
+            };
+
+            btn.addEventListener('touchend', release, { passive: false });
+            btn.addEventListener('touchcancel', release, { passive: false });
         });
     },
 

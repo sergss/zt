@@ -97,7 +97,138 @@ function init() {
         }
     });
 
+    // Handle touch events on the canvas itself (Menu, Password, Roster, HUD Weapons)
+    canvas.addEventListener('touchstart', (e) => {
+        // Only care if we are actually interacting with the canvas
+        // (the overlay buttons stop propagation, so this is only direct canvas taps)
+        if (e.touches.length > 0) {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const internalW = canvas.width;
+            const internalH = canvas.height;
+            const internalRatio = internalW / internalH;
+            const rectRatio = rect.width / rect.height;
+
+            let renderW = rect.width;
+            let renderH = rect.height;
+            let offsetX = 0;
+            let offsetY = 0;
+
+            const style = window.getComputedStyle(canvas);
+            if (style.objectFit === 'contain') {
+                if (rectRatio > internalRatio) {
+                    renderH = rect.height;
+                    renderW = renderH * internalRatio;
+                    offsetX = (rect.width - renderW) / 2;
+                } else {
+                    renderW = rect.width;
+                    renderH = renderW / internalRatio;
+                    offsetY = (rect.height - renderH) / 2;
+                }
+            }
+
+            // Calculate scaled coordinates based on actual rendered size and offsets
+            const scaleX = internalW / renderW;
+            const scaleY = internalH / renderH;
+            const touchX = (e.touches[0].clientX - rect.left - offsetX) * scaleX;
+            const touchY = (e.touches[0].clientY - rect.top - offsetY) * scaleY;
+
+            handleCanvasTouch(touchX, touchY);
+        }
+    }, { passive: false });
+
     requestAnimationFrame(gameLoop);
+}
+
+function handleCanvasTouch(x, y) {
+    if (gameState === 'MENU') {
+        // menu items are at y: 300, 360, 420
+        // approximate bounding boxes:
+        for (let i = 0; i < menuItems.length; i++) {
+            let itemY = 300 + i * 60;
+            // The text baseline is default (bottom). So words are drawn upwards from itemY.
+            // A font size of 30 means bounding box is roughly Y-30 to Y. We should pad it.
+            if (y > itemY - 40 && y < itemY + 20) {
+                // Tapped this item
+                menuSelectedIndex = i;
+                Input.keys['Space'] = true; // trigger selection in next update loop
+                setTimeout(() => Input.keys['Space'] = false, 50);
+                return;
+            }
+        }
+    } else if (gameState === 'SELECT_CHARACTER') {
+        // items are at y = 120 + index * 80 (box is y-45 to y+35)
+        for (let i = 0; i < roster.characters.length; i++) {
+            if (!roster.characters[i].alive) continue;
+            let itemY = 120 + i * 80;
+            if (y > itemY - 45 && y < itemY + 35) {
+                roster.selectedIndex = i;
+                Input.keys['Space'] = true;
+                setTimeout(() => Input.keys['Space'] = false, 50);
+                return;
+            }
+        }
+    } else if (gameState === 'PASSWORD') {
+        // EXIT Button: ctx.fillRect(20, 20, 100, 40);
+        if (x > 20 && x < 120 && y > 20 && y < 60) {
+            Input.keys['Escape'] = true;
+            setTimeout(() => Input.keys['Escape'] = false, 50);
+            return;
+        }
+
+        // Keyboard: startX = CONFIG.SCREEN_WIDTH / 2 - (7 * 60) / 2 + 30 = 960/2 - 210 + 30 = 300
+        // startY = 240
+        // px = 300 + x * 60, py = 240 + y * 50
+        if (y > 210 && y < 240 + 6 * 50) {
+            let gridY = Math.floor((y - 215) / 50);
+            let gridX = Math.floor((x - 275) / 60);
+            if (gridY >= 0 && gridY < PWD_KEYS.length && gridX >= 0 && gridX < PWD_KEYS[gridY].length) {
+                if (PWD_KEYS[gridY][gridX] !== '') {
+                    pwdCursorY = gridY;
+                    pwdCursorX = gridX;
+                    Input.keys['Space'] = true;
+                    setTimeout(() => Input.keys['Space'] = false, 50);
+                }
+            }
+        }
+    } else if (gameState === 'PLAYING') {
+        // HUD Weapons are drawn at top of screen (Y: 10 to 42)
+        // X positions from hud.js: xStart + (i-3)*100
+        // Center is 960/2 = 480. 3 is the middle weapon, so x = 480.
+        // i=0: 180, i=1: 280, i=2: 380, i=3: 480, i=4: 580, i=5: 680, i=6: 780
+        if (y < 50 && player) {
+            let clickedWeapon = -1;
+            for (let i = 0; i < 7; i++) {
+                let wx = 480 + (i - 3) * 100;
+                if (Math.abs(x - wx) < 45) {
+                    clickedWeapon = i;
+                    break;
+                }
+            }
+            if (clickedWeapon >= 0 && player.weapons[clickedWeapon]) {
+                player.switchWeapon(clickedWeapon);
+            }
+        }
+    } else if (gameState === 'OPTIONS') {
+        // BACK button: ctx.fillRect(CONFIG.SCREEN_WIDTH / 2 - 100, 500, 200, 50); (x: 380 to 580, y: 500 to 550)
+        if (x > 380 && x < 580 && y > 500 && y < 550) {
+            Input.keys['Space'] = true;
+            setTimeout(() => Input.keys['Space'] = false, 50);
+        }
+    } else if (gameState === 'PAUSED') {
+        // Tap top half to resume, bottom half to quit
+        if (y < CONFIG.SCREEN_HEIGHT / 2) {
+            Input.keys['Escape'] = true;
+            setTimeout(() => Input.keys['Escape'] = false, 50);
+        } else {
+            Input.keys['Space'] = true;
+            setTimeout(() => Input.keys['Space'] = false, 50);
+        }
+    } else if (gameState === 'LEVEL_COMPLETE' || gameState === 'VICTORY' || gameState === 'GAMEOVER') {
+        // Any tap proceeds
+        Input.keys['Space'] = true;
+        setTimeout(() => Input.keys['Space'] = false, 50);
+    }
 }
 
 function startLevel(characterConfig, isNextLevel = false) {
@@ -540,7 +671,13 @@ function draw() {
 
         ctx.fillStyle = '#888';
         ctx.font = '20px monospace';
-        ctx.fillText("Press SPACE to return", CONFIG.SCREEN_WIDTH / 2, 500);
+        ctx.fillText("Press SPACE or click below to return", CONFIG.SCREEN_WIDTH / 2, 450);
+
+        ctx.fillStyle = '#aaa';
+        ctx.fillRect(CONFIG.SCREEN_WIDTH / 2 - 100, 500, 200, 50);
+        ctx.fillStyle = '#000';
+        ctx.font = '30px monospace';
+        ctx.fillText("BACK", CONFIG.SCREEN_WIDTH / 2, 535);
         return;
     }
 
@@ -601,9 +738,15 @@ function draw() {
 
         ctx.fillStyle = '#888';
         ctx.font = '20px monospace';
-        ctx.fillText("Type on keyboard and press ENTER", CONFIG.SCREEN_WIDTH / 2, CONFIG.SCREEN_HEIGHT - 60);
-        ctx.fillText("or select OK using WASD+SPACE", CONFIG.SCREEN_WIDTH / 2, CONFIG.SCREEN_HEIGHT - 35);
-        ctx.fillText("Press ESC to return to menu", CONFIG.SCREEN_WIDTH / 2, CONFIG.SCREEN_HEIGHT - 10);
+        ctx.fillText("Type on keyboard and press ENTER", CONFIG.SCREEN_WIDTH / 2, CONFIG.SCREEN_HEIGHT - 65);
+        ctx.fillText("or select OK using WASD+SPACE", CONFIG.SCREEN_WIDTH / 2, CONFIG.SCREEN_HEIGHT - 40);
+
+        // EXIT Button
+        ctx.fillStyle = '#aaa';
+        ctx.fillRect(20, 20, 100, 40);
+        ctx.fillStyle = '#000';
+        ctx.font = '24px monospace';
+        ctx.fillText("EXIT", 70, 48);
         return;
     }
 
@@ -863,6 +1006,8 @@ function draw() {
 function gameLoop(timestamp) {
     const dt = (timestamp - lastTime) / 1000;
     lastTime = timestamp;
+
+    document.body.classList.toggle('in-game', gameState === 'PLAYING');
 
     update(dt);
     draw();
