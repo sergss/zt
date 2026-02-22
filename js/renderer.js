@@ -18,6 +18,21 @@ class Renderer {
         this.ctx.fillStyle = '#555555'; // Floor
         this.ctx.fillRect(this.x, this.y + this.height / 2, this.width, this.height / 2);
 
+        // Distance fog for ceiling and floor
+        // The horizon is at this.y + this.height/2.
+        let horizonY = this.y + this.height / 2;
+        let gradientCeil = this.ctx.createLinearGradient(0, this.y, 0, horizonY);
+        gradientCeil.addColorStop(0, "rgba(0,0,0,0)");
+        gradientCeil.addColorStop(1, "rgba(0,0,0,0.8)"); // Darker near horizon (further away)
+        this.ctx.fillStyle = gradientCeil;
+        this.ctx.fillRect(this.x, this.y, this.width, this.height / 2);
+
+        let gradientFloor = this.ctx.createLinearGradient(0, horizonY, 0, this.y + this.height);
+        gradientFloor.addColorStop(0, "rgba(0,0,0,0.8)"); // Darker near horizon
+        gradientFloor.addColorStop(1, "rgba(0,0,0,0)");
+        this.ctx.fillStyle = gradientFloor;
+        this.ctx.fillRect(this.x, horizonY, this.width, this.height / 2);
+
         // Raycasting
         for (let x = 0; x < this.width; x++) {
             // Calculate ray angle
@@ -159,6 +174,13 @@ class Renderer {
                 const endX = Math.floor(screenX + spriteWidth / 2);
 
                 if (tex) {
+                    // Distance fog for sprites via CSS filter
+                    const fogDist = 12.0;
+                    if (perpDist > 2.0) {
+                        let fogAlpha = Math.min(1.0, (perpDist - 2.0) / (fogDist - 2.0));
+                        this.ctx.filter = `brightness(${1.0 - fogAlpha})`;
+                    }
+
                     for (let stripe = startX; stripe < endX; stripe++) {
                         if (stripe >= 0 && stripe < this.width) {
                             // Z-Buffer Check
@@ -187,6 +209,10 @@ class Renderer {
                                 }
                             }
                         }
+                    }
+
+                    if (perpDist > 2.0) {
+                        this.ctx.filter = 'none';
                     }
                 }
             }
