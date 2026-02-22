@@ -77,6 +77,17 @@ class Renderer {
                     let drawY = (this.height - lineHeight) / 2;
                     this.ctx.fillRect(this.x + x, this.y + drawY, 1, lineHeight);
                 }
+
+                // Distance fog overlay
+                // Maximum visibility distance is around 12 units
+                const fogDist = 12.0;
+                if (perpDist > 2.0) {
+                    let fogAlpha = Math.min(1.0, (perpDist - 2.0) / (fogDist - 2.0));
+                    this.ctx.fillStyle = `rgba(0, 0, 0, ${fogAlpha})`;
+                    let drawY = (this.height - lineHeight) / 2;
+                    this.ctx.fillRect(this.x + x, this.y + drawY, 1, lineHeight);
+                }
+
             } else {
                 this.zBuffer[x] = Infinity; // Infinite distance if no hit
             }

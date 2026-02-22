@@ -142,13 +142,22 @@ function startLevel(characterConfig, isNextLevel = false) {
     renderer = new Renderer(ctx, CONFIG);
 
     gameState = 'PLAYING';
+    levelFadeTimer = 1.0;
 }
 
 let kiaTimer = 0;
 let levelTimer = 0; // shared timer for transitions
+let levelFadeTimer = 0;
 let showAutomap = false;
 
 function update(dt) {
+    if (levelFadeTimer > 0) {
+        levelFadeTimer -= dt;
+        if (levelFadeTimer < 0) levelFadeTimer = 0;
+    }
+    if (gameState === 'VICTORY') {
+        levelTimer += dt;
+    }
     if (gameState === 'MENU') {
         if (Input.isActionActive('forward')) {
             menuSelectedIndex--;
@@ -312,6 +321,7 @@ function update(dt) {
                 startLevel(null, true);
             } else {
                 gameState = 'VICTORY';
+                levelTimer = 0;
             }
             Input.keys['Space'] = false;
             Input.keys['Enter'] = false;
@@ -702,18 +712,53 @@ function draw() {
     }
 
     if (gameState === 'VICTORY') {
-        ctx.fillStyle = '#000044';
+        ctx.fillStyle = '#000011';
         ctx.fillRect(0, 0, CONFIG.SCREEN_WIDTH, CONFIG.SCREEN_HEIGHT);
+
+        let scrollY = CONFIG.SCREEN_HEIGHT - (levelTimer * 50);
+
         ctx.fillStyle = '#00ffff';
-        ctx.font = '60px monospace';
         ctx.textAlign = 'center';
-        ctx.fillText("MISSION ACCOMPLISHED", CONFIG.SCREEN_WIDTH / 2, CONFIG.SCREEN_HEIGHT / 2 - 40);
+
+        // Title
+        ctx.font = '60px monospace';
+        ctx.fillText("MISSION ACCOMPLISHED", CONFIG.SCREEN_WIDTH / 2, scrollY);
+
         ctx.fillStyle = '#fff';
         ctx.font = '24px monospace';
-        ctx.fillText("The station is clear.", CONFIG.SCREEN_WIDTH / 2, CONFIG.SCREEN_HEIGHT / 2 + 20);
+        ctx.fillText("The station is clear.", CONFIG.SCREEN_WIDTH / 2, scrollY + 60);
+
+        // Credits Segment
+        ctx.fillStyle = '#0f0';
+        ctx.font = '30px monospace';
+        ctx.fillText("CREDITS", CONFIG.SCREEN_WIDTH / 2, scrollY + 160);
+
+        ctx.fillStyle = '#fff';
+        ctx.font = '18px monospace';
+        ctx.fillText("Executive Producer", CONFIG.SCREEN_WIDTH / 2, scrollY + 220);
         ctx.fillStyle = '#aaa';
-        ctx.font = '16px monospace';
-        ctx.fillText("Press ENTER to return to roster.", CONFIG.SCREEN_WIDTH / 2, CONFIG.SCREEN_HEIGHT / 2 + 60);
+        ctx.fillText("Ollama Adventure Team", CONFIG.SCREEN_WIDTH / 2, scrollY + 250);
+
+        ctx.fillStyle = '#fff';
+        ctx.fillText("Lead Programmer", CONFIG.SCREEN_WIDTH / 2, scrollY + 310);
+        ctx.fillStyle = '#aaa';
+        ctx.fillText("AI Assistant", CONFIG.SCREEN_WIDTH / 2, scrollY + 340);
+
+        ctx.fillStyle = '#fff';
+        ctx.fillText("Level Design", CONFIG.SCREEN_WIDTH / 2, scrollY + 400);
+        ctx.fillStyle = '#aaa';
+        ctx.fillText("Procedural Gen & Tuning", CONFIG.SCREEN_WIDTH / 2, scrollY + 430);
+
+        ctx.fillStyle = '#ff0';
+        ctx.font = '24px monospace';
+        ctx.fillText("THANK YOU FOR PLAYING!", CONFIG.SCREEN_WIDTH / 2, scrollY + 540);
+
+        // Instructions to skip/exit appear after it scrolls up or immediately
+        if (scrollY < -500 || (levelTimer > 2 && Math.floor(Date.now() / 500) % 2 === 0)) {
+            ctx.fillStyle = '#888';
+            ctx.font = '16px monospace';
+            ctx.fillText("Press ENTER to return to roster.", CONFIG.SCREEN_WIDTH / 2, CONFIG.SCREEN_HEIGHT - 30);
+        }
         return;
     }
 

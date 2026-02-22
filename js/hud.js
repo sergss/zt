@@ -264,6 +264,14 @@ class HUD {
         ctx.fillStyle = '#6a8db4'; // Blueish grey photo background
         let isDead = char.hp <= 0;
         let isHurt = char.hp > 0 && char.hp < (char.maxHp || 100) * 0.4;
+
+        // Blink if hurt
+        if (isHurt && Math.floor(Date.now() / 250) % 2 === 0) {
+            ctx.fillStyle = '#bd2d2d'; // Reddish danger background
+        }
+
+        ctx.fillRect(0, 0, 100, 110);
+
         let cName = char.name || '';
 
         if (cName.includes("John")) {

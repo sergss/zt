@@ -136,7 +136,20 @@ class TextureManager {
             ctx.fillStyle = this.currentChapter === 1 ? 'rgba(255, 0, 0, 0.2)' : 'rgba(0, 0, 255, 0.2)';
             ctx.globalCompositeOperation = 'multiply';
             ctx.fillRect(0, 0, this.size, this.size);
+
+            // Add bloody/grimy traces on walls
             ctx.globalCompositeOperation = 'source-over';
+            ctx.fillStyle = this.currentChapter === 1 ? 'rgba(120, 0, 0, 0.8)' : 'rgba(0, 50, 0, 0.8)'; // Blood in ch1, alien slime in ch2
+            const numSplats = Math.floor(Math.random() * 3) + 2;
+            for (let i = 0; i < numSplats; i++) {
+                let sx = Math.random() * this.size;
+                let sy = Math.random() * this.size;
+                ctx.beginPath();
+                ctx.arc(sx, sy, 2 + Math.random() * 4, 0, Math.PI * 2);
+                ctx.fill();
+                // Dripping effect
+                ctx.fillRect(sx - 1, sy, 2, 8 + Math.random() * 20);
+            }
         }
 
         return canvas;
