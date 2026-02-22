@@ -16,14 +16,17 @@ function testStep15(T) {
     T.assert(advanced, 'Can advance from level 0');
     T.assertEqual(levelMgr.currentLevel, 1, 'Advanced to level 1');
 
-    // Переход дальше
-    levelMgr.nextLevel();
-    T.assertEqual(levelMgr.currentLevel, 2, 'Advanced to level 2');
+    // Переход до конца
+    const endLevel = levelMgr.levels.length - 1;
+    while (levelMgr.currentLevel < endLevel) {
+        levelMgr.nextLevel();
+    }
+    T.assertEqual(levelMgr.currentLevel, endLevel, `Advanced to level ${endLevel}`);
 
     // Попытка перехода за пределы
     const canAdvanceMore = levelMgr.nextLevel();
     T.assert(!canAdvanceMore, 'Cannot advance past the last level');
-    T.assertEqual(levelMgr.currentLevel, 2, 'Stays at level 2');
+    T.assertEqual(levelMgr.currentLevel, endLevel, `Stays at level ${endLevel}`);
 
     // Проверка коллизий на всех уровнях (спавн внутри стен)
     levelMgr.levels.forEach((level, i) => {
