@@ -121,16 +121,16 @@ class TextureManager {
         }
 
         else if (type === 'elevator') {
-    // Type 8: Elevator (Silver doors with a seam)
-    ctx.fillStyle = '#888899';
-    ctx.fillRect(0, 0, this.size, this.size);
-    ctx.fillStyle = '#444455';
-    ctx.fillRect(30, 0, 4, 64); // Center seam
-    ctx.fillRect(0, 0, 64, 4);  // Top frame
-    ctx.fillStyle = '#222222';
-    ctx.fillRect(10, 20, 12, 24); // Left panel
-    ctx.fillRect(42, 20, 12, 24); // Right panel
-}
+            // Type 8: Elevator (Silver doors with a seam)
+            ctx.fillStyle = '#888899';
+            ctx.fillRect(0, 0, this.size, this.size);
+            ctx.fillStyle = '#444455';
+            ctx.fillRect(30, 0, 4, 64); // Center seam
+            ctx.fillRect(0, 0, 64, 4);  // Top frame
+            ctx.fillStyle = '#222222';
+            ctx.fillRect(10, 20, 12, 24); // Left panel
+            ctx.fillRect(42, 20, 12, 24); // Right panel
+        }
 
         if (this.currentChapter > 0 && ['metal', 'bricks', 'tech', 'concrete', 'door'].includes(type)) {
             ctx.fillStyle = this.currentChapter === 1 ? 'rgba(255, 0, 0, 0.2)' : 'rgba(0, 0, 255, 0.2)';
@@ -139,7 +139,7 @@ class TextureManager {
             ctx.globalCompositeOperation = 'source-over';
         }
 
-return canvas;
+        return canvas;
     }
 
     generateItemTexture(type) {
@@ -206,13 +206,20 @@ return canvas;
             ctx.fill();
         }
         else if (type === 'ammo' || type === 'ammoBullets') {
-            // Green Box
+            // Grey Box for pistol
             ctx.fillStyle = '#444444';
-            ctx.fillRect(20, 32, 24, 24); // Grey case
-            ctx.fillStyle = '#aaaa00'; // Bullets
+            ctx.fillRect(20, 32, 24, 24);
+            ctx.fillStyle = '#aaaa00';
             ctx.fillRect(22, 34, 4, 4);
             ctx.fillRect(28, 34, 4, 4);
             ctx.fillRect(34, 34, 4, 4);
+        }
+        else if (type === 'ammoRifle') {
+            // Tall Dark Green Box
+            ctx.fillStyle = '#114411';
+            ctx.fillRect(22, 28, 20, 30);
+            ctx.fillStyle = '#558855';
+            ctx.fillRect(24, 40, 16, 10);
         }
         else if (type === 'ammoShells') {
             // Red Box
@@ -940,7 +947,7 @@ return canvas;
             ctx.fillRect(12, 12, 40, 20); // visor logic
             ctx.fillStyle = '#ff0000';
             ctx.fillRect(16, 16, 32, 12); // red glowing eye strip
-            
+
             // Arms
             ctx.fillStyle = '#888888';
             ctx.fillRect(2, 20, 6, 30);
@@ -960,7 +967,7 @@ return canvas;
     loadChapterPalette(chapterIndex) {
         if (this.currentChapter === chapterIndex) return;
         this.currentChapter = chapterIndex;
-        
+
         // Regenerate environment textures
         this.textures[1] = this.generateTexture('metal');
         this.textures[2] = this.generateTexture('bricks');

@@ -48,11 +48,17 @@ class Item extends Sprite {
                 break;
 
             // --- ПАТРОНЫ ---
-            case 'ammo': // Стандартные пули
+            case 'ammo': // Стандартные пули (Pistol)
             case 'ammoBullets':
             case 'ammo_bullets':
                 if (player.ammo.bullets < 200) {
                     player.ammo.bullets = Math.min(200, player.ammo.bullets + 10);
+                    picked = true;
+                }
+                break;
+            case 'ammoRifle': // Патроны для автомата
+                if (player.ammo.rifle < 200) {
+                    player.ammo.rifle = Math.min(200, player.ammo.rifle + 20);
                     picked = true;
                 }
                 break;
@@ -105,10 +111,10 @@ class Item extends Sprite {
                 if (!player.weapons[2]) {
                     player.weapons[2] = true;
                     player.switchWeapon(2);
-                    player.ammo.bullets += 20;
+                    player.ammo.rifle += 20;
                     picked = true;
-                } else if (player.ammo.bullets < 200) {
-                    player.ammo.bullets = Math.min(200, player.ammo.bullets + 20);
+                } else if (player.ammo.rifle < 200) {
+                    player.ammo.rifle = Math.min(200, player.ammo.rifle + 20);
                     picked = true;
                 }
                 break;

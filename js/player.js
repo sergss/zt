@@ -24,7 +24,8 @@ class Player {
         this.weapon = WEAPONS[this.currentWeaponIndex].name;
 
         this.ammo = {
-            bullets: 40,   // Pistol/Assault Rifle
+            bullets: 40,   // Pistol
+            rifle: 30,     // Assault Rifle
             shells: 20,    // Shotgun
             belt: 50,      // MG
             rockets: 5,    // Rocket

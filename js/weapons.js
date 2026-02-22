@@ -26,7 +26,7 @@ const WEAPONS = [
         damage: 12,
         fireRate: 0.1,
         range: 25,
-        ammoType: 'bullets', // Shares with pistol? usually rifle ammo
+        ammoType: 'rifle', // Used to share with pistol, now separate
         ammoPerShot: 1,
         isAutomatic: true,
         spread: 0.1,

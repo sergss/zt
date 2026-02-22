@@ -10,7 +10,7 @@ function testStep10(T) {
     p.armor = 25;
     p.weapons = [true, true, true, true, true, true, true]; // All weapons
     p.ammo = {
-        bullets: 40, shells: 20, belt: 50, rockets: 5, fuel: 50, cells: 20, infinite: 999
+        bullets: 40, rifle: 30, shells: 20, belt: 50, rockets: 5, fuel: 50, cells: 20, infinite: 999
     };
 
     // 1. Health Pickup
@@ -42,7 +42,7 @@ function testStep10(T) {
     sRifle.updateDistance(p);
     sRifle.checkPickup(p);
     T.assert(p.weapons[2], 'Assault Rifle unlocked');
-    T.assertEqual(p.ammo.bullets, 60, 'Bullets +20 (40+20)');
+    T.assertEqual(p.ammo.rifle, 50, 'Rifle ammo +20 (30+20)');
 
     const sRocket = new Item(1.6, 1.6, 'weaponRocketLauncher');
     sRocket.updateDistance(p);

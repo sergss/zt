@@ -102,6 +102,7 @@ class LevelManager {
 
                     // Патроны
                     case 'ab': items.push({ type: 'ammoBullets', x: cx, y: cy }); break;
+                    case 'aA': items.push({ type: 'ammoRifle', x: cx, y: cy }); break;
                     case 'as': items.push({ type: 'ammoShells', x: cx, y: cy }); break;
                     case 'aR': items.push({ type: 'ammoRockets', x: cx, y: cy }); break;
                     case 'aF': items.push({ type: 'ammoFuel', x: cx, y: cy }); break;
